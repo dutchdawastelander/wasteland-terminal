@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vault-Tec Terminal Access</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--ph:#7fff8a;--dim:#55b86d;--scan:rgba(0,0,0,.23);}
+html,body{background:#000;margin:0}
+.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;
+color:var(--ph);font-family:"VT323",monospace}
+.term{width:min(1024px,95vw);height:min(720px,93vh);position:relative;background:#020402;border-radius:18px;
+padding:24px;box-shadow:inset 0 0 40px rgba(0,0,0,.55),0 0 60px rgba(0,0,0,.8)}
+.term:before{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
+background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);
+mix-blend-mode:soft-light;opacity:.28}
+.hdr{margin:0 0 10px;letter-spacing:.08em;font-size:32px;text-transform:uppercase}
+.sub{color:var(--dim);margin-bottom:10px}
+.rule{height:1px;background:linear-gradient(90deg,var(--ph),transparent);opacity:.5;margin:8px 0 16px}
+.menu{list-style:none;padding:0;margin:0;display:grid;gap:10px;position:relative;z-index:1}
+.item{display:flex;gap:10px;align-items:center;cursor:pointer;border:1px solid rgba(127,255,138,.25);
+background:rgba(8,16,8,.22);padding:10px;border-radius:8px;font-size:22px}
+.item.active{outline:2px solid rgba(127,255,138,.6);background:rgba(24,48,28,.5)}
+.idx{width:2.2em;text-align:center}
+.status{position:absolute;left:0;right:0;bottom:0;padding:10px 16px;z-index:1;color:var(--dim);
+background:linear-gradient(0deg,rgba(10,20,10,.55),rgba(10,20,10,0));display:flex;justify-content:space-between;align-items:center}
+.cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
+@keyframes blink{50%{opacity:0}}
+.toggle{position:absolute;top:10px;right:14px;border:1px solid rgba(127,255,138,.45);
+padding:6px 10px;border-radius:6px;cursor:pointer;font-size:18px}
+.toggle:hover{background:rgba(24,48,28,.5)}
+/* Reader Mode */
+body.reader{background:radial-gradient(1200px 800px at 50% 50%,#0e110f 0%,#0a0d0b 70%),#0a0d0b;color:#a8e8b7}
+body.reader .term{background:#0d100e;box-shadow:inset 0 0 24px rgba(0,0,0,.7),0 0 40px rgba(0,0,0,.7)}
+body.reader .term:before{opacity:.12}
+body.reader .hdr{color:#a8e8b7}
+body.reader .item{line-height:1.6}
+/* Subtle CRT animations */
+.term{animation:crtFlicker 3.8s steps(2,end) infinite}
+.hdr,.item.active{ text-shadow:0 0 6px rgba(127,255,138,.25),0 0 18px rgba(127,255,138,.12); animation:glowPulse 6s ease-in-out infinite}
+.term::after{content:"";position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.25),transparent);
+opacity:.08;pointer-events:none;border-radius:18px;animation:scanRoll 7.5s linear infinite}
+.cursor{text-shadow:0 0 8px rgba(127,255,138,.35)}
+@keyframes crtFlicker{0%,100%{filter:none;opacity:.995}35%{opacity:1}70%{opacity:.992}}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 6px rgba(127,255,138,.23),0 0 16px rgba(127,255,138,.10)}
+50%{text-shadow:0 0 8px rgba(127,255,138,.32),0 0 22px rgba(127,255,138,.16)}}
+@keyframes scanRoll{0%{top:-2px}100%{top:100%}}
+@media (prefers-reduced-motion:reduce){.term,.hdr,.item.active,.term::after,.cursor{animation:none!important}}
+/* Ad frames (style only; add AdSense later) */
+.ad-frame{border:1px solid rgba(127,255,138,.35);background:rgba(8,16,8,.22);border-radius:8px;padding:8px;margin:14px 0;box-shadow:0 0 8px rgba(127,255,138,.08) inset}
+.ad-label{font-size:16px;color:var(--dim);letter-spacing:.08em;margin-bottom:6px}
+.ad-slot{display:block;width:100%;min-height:90px}
+/* Support buttons */
+.support{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.support a{border:1px solid rgba(127,255,138,.45);padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ph);background:rgba(8,16,8,.22)}
+.support a:hover{background:rgba(24,48,28,.5)}
+</style>
+<!-- (Optional) AdSense loader goes in head when approved:
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX" crossorigin="anonymous"></script>
+-->
+</head>
+<body>
+<div class="wrap">
+  <div class="term" role="application" aria-label="Vault-Tec Terminal">
+    <div class="toggle" id="toggleMode">READER MODE: OFF</div>
+
+    <div class="hdr">VAULT-TEC TERMINAL ACCESS</div>
+    <div class="sub">USER: Overseer • Use ↑/↓ or 1–9 • ENTER to open</div>
+    <div class="rule"></div>
+
+    <!-- Top ad (optional) -->
+    <div class="ad-frame">
+      <div class="ad-label">SPONSORED TRANSMISSION</div>
+      <div class="ad-slot"><!-- AdSense unit goes here later --></div>
+    </div>
+
+    <ul id="menu" class="menu" role="menu" aria-label="Stories Index">
+      <li class="item"><span class="idx">[1]</span><span class="title">No Home in the Waste — Chapter 1</span></li>
+      <li class="item"><span class="idx">[2]</span><span class="title">HP43 — Prologue</span></li>
+      <li class="item"><span class="idx">[3]</span><span class="title">Shelter 21 — Short</span></li>
+    </ul>
+
+    <!-- Mid ad (optional) -->
+    <div class="ad-frame">
+      <div class="ad-label">SPONSORED TRANSMISSION</div>
+      <div class="ad-slot"><!-- AdSense unit goes here later --></div>
+    </div>
+
+    <!-- Support buttons (instant monetization while AdSense approves) -->
+    <div class="support">
+      <a href="https://ko-fi.com/" target="_blank" rel="noopener">☕ Buy me a coffee</a>
+      <a href="https://www.patreon.com/" target="_blank" rel="noopener">♥ Patreon</a>
+      <a href="mailto:you@example.com">✉ Email updates</a>
+    </div>
+
+    <div class="status" aria-live="polite">
+      <div>INPUT: <span id="status">Select with arrows or number keys, ENTER to open</span></div>
+      <div>READY<span class="cursor">▌</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Links to your chapters (relative links are fine on GitHub Pages)
+const LINKS = [
+  "chapter1.html",
+  "hp43.html",
+  "shelter21.html"
+];
+
+// Menu + status
+const items=[...document.querySelectorAll(".item")];
+const statusEl=document.getElementById("status");
+let i=0;
+function activate(n){
+  i=(n+items.length)%items.length;
+  items.forEach((el,idx)=>el.classList.toggle("active",idx===i));
+  const title=items[i].querySelector(".title")?.textContent||"";
+  statusEl.textContent="Selected: "+title;
+}
+function openLink(){ if(LINKS[i]) window.location.href=LINKS[i]; }
+items.forEach((el,idx)=>{ el.addEventListener("mouseenter",()=>activate(idx)); el.addEventListener("click",openLink); });
+activate(0);
+window.addEventListener("keydown",e=>{
+  if(e.key==="ArrowDown")activate(i+1);
+  if(e.key==="ArrowUp")activate(i-1);
+  if(e.key==="Enter")openLink();
+  if(/^[0-9]$/.test(e.key)){ const n=(+e.key||10)-1; if(LINKS[n]){ activate(n); openLink(); } }
+});
+
+// Reader Mode (persist)
+const t=document.getElementById('toggleMode');
+const pref=localStorage.getItem('readerMode')==='1';
+if(pref) document.body.classList.add('reader');
+t.textContent='READER MODE: '+(document.body.classList.contains('reader')?'ON':'OFF');
+t.addEventListener('click',()=>{
+  document.body.classList.toggle('reader');
+  const on=document.body.classList.contains('reader');
+  t.textContent='READER MODE: '+(on?'ON':'OFF');
+  localStorage.setItem('readerMode',on?'1':'0');
+});
+
+// Safe decode for leftover HTML entities (without nuking events)
+function decodeNodeText(node){
+  node.childNodes.forEach(ch=>{
+    if(ch.nodeType===3){ ch.nodeValue=ch.nodeValue.replace(/&#(\d+);/g,(_,n)=>String.fromCharCode(n)); }
+    else{ decodeNodeText(ch); }
+  });
+}
+decodeNodeText(document.querySelector('.term'));
+</script>
+</body>
+</html>
