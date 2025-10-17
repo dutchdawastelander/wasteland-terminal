@@ -85,7 +85,24 @@ body.reader .item{line-height:1.6}
 .support a:hover{background:rgba(24,48,28,.5)}
 </style>
 </head>
-<body>
+<div id="noise"></div>
+<style>
+#noise {
+  pointer-events:none;
+  position:fixed;
+  inset:0;
+  background: repeating-radial-gradient(circle,rgba(127,255,138,.015) 0,rgba(0,0,0,.02) 2px);
+  mix-blend-mode:overlay;
+  animation:noiseShift .8s steps(2,end) infinite;
+}
+@keyframes noiseShift {
+  0%,100%{opacity:.18}
+  50%{opacity:.23}
+}
+</style>
+
+  
+  <body>
 <div class="wrap">
   <div class="term" role="application" aria-label="Vault-Tec Terminal">
     <div class="toggle" id="toggleMode">READER MODE: OFF</div>
