@@ -22,114 +22,72 @@ mix-blend-mode:soft-light;opacity:.28}
 background:rgba(8,16,8,.22);padding:10px;border-radius:8px;font-size:22px}
 .item.active{outline:2px solid rgba(127,255,138,.6);background:rgba(24,48,28,.5)}
 .idx{width:2.2em;text-align:center}
+.badge{margin-left:auto;color:var(--dim);font-size:18px}
+
+/* Story headers vs chapters */
+.item.story{font-size:24px}
+.item.story .caret{width:1.2em;display:inline-block}
+.item.chapter{margin-left:32px;border-style:dashed}
+.item.chapter .idx{opacity:.7}
+
+/* Status bar */
 .status{position:absolute;left:0;right:0;bottom:0;padding:10px 16px;z-index:1;color:var(--dim);
 background:linear-gradient(0deg,rgba(10,20,10,.55),rgba(10,20,10,0));display:flex;justify-content:space-between;align-items:center}
 .cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
 @keyframes blink{50%{opacity:0}}
+
+/* Reader toggle */
 .toggle{position:absolute;top:10px;right:14px;border:1px solid rgba(127,255,138,.45);
 padding:6px 10px;border-radius:6px;cursor:pointer;font-size:18px}
 .toggle:hover{background:rgba(24,48,28,.5)}
-/* Reader Mode */
 body.reader{background:radial-gradient(1200px 800px at 50% 50%,#0e110f 0%,#0a0d0b 70%),#0a0d0b;color:#a8e8b7}
 body.reader .term{background:#0d100e;box-shadow:inset 0 0 24px rgba(0,0,0,.7),0 0 40px rgba(0,0,0,.7)}
 body.reader .term:before{opacity:.12}
 body.reader .hdr{color:#a8e8b7}
 body.reader .item{line-height:1.6}
 
-/* ===== Subtle CRT animations ===== */
-.term {
-  animation: crtFlicker 3.8s steps(2,end) infinite;
-}
-.hdr, .item.active {
-  text-shadow: 0 0 6px rgba(127,255,138,.25), 0 0 18px rgba(127,255,138,.12);
-  animation: glowPulse 6s ease-in-out infinite;
-}
-.term::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 2px;
-  top: -2px;
-  background: linear-gradient(90deg,transparent,rgba(127,255,138,.25),transparent);
-  opacity: .08;
-  pointer-events: none;
-  border-radius: 18px;
-  animation: scanRoll 7.5s linear infinite;
-}
-.cursor {
-  text-shadow: 0 0 8px rgba(127,255,138,.35);
-}
-@keyframes crtFlicker {
-  0%,100%{filter:none;opacity:.995}
-  35%{opacity:1}
-  70%{opacity:.992}
-}
-@keyframes glowPulse {
-  0%,100%{text-shadow:0 0 6px rgba(127,255,138,.23),0 0 16px rgba(127,255,138,.10)}
-  50%{text-shadow:0 0 8px rgba(127,255,138,.32),0 0 22px rgba(127,255,138,.16)}
-}
-@keyframes scanRoll {
-  0%{top:-2px}
-  100%{top:100%}
-}
+/* CRT animations */
+.term{animation:crtFlicker 3.8s steps(2,end) infinite}
+.hdr,.item.active{ text-shadow:0 0 6px rgba(127,255,138,.25),0 0 18px rgba(127,255,138,.12); animation:glowPulse 6s ease-in-out infinite}
+.term::after{content:"";position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.25),transparent);
+opacity:.08;pointer-events:none;border-radius:18px;animation:scanRoll 7.5s linear infinite}
+.cursor{text-shadow:0 0 8px rgba(127,255,138,.35)}
+@keyframes crtFlicker{0%,100%{filter:none;opacity:.995}35%{opacity:1}70%{opacity:.992}}
+@keyframes glowPulse{0%,100%{text-shadow:0 0 6px rgba(127,255,138,.23),0 0 16px rgba(127,255,138,.10)}
+50%{text-shadow:0 0 8px rgba(127,255,138,.32),0 0 22px rgba(127,255,138,.16)}}
+@keyframes scanRoll{0%{top:-2px}100%{top:100%}}
+@media (prefers-reduced-motion:reduce){.term,.hdr,.item.active,.term::after,.cursor{animation:none!important}}
 
-
-/* Ad frames (style only; add AdSense later) */
+/* Ad / Support (optional) */
 .ad-frame{border:1px solid rgba(127,255,138,.35);background:rgba(8,16,8,.22);border-radius:8px;padding:8px;margin:14px 0;box-shadow:0 0 8px rgba(127,255,138,.08) inset}
 .ad-label{font-size:16px;color:var(--dim);letter-spacing:.08em;margin-bottom:6px}
 .ad-slot{display:block;width:100%;min-height:90px}
-/* Support buttons */
 .support{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
 .support a{border:1px solid rgba(127,255,138,.45);padding:6px 10px;border-radius:6px;text-decoration:none;color:var(--ph);background:rgba(8,16,8,.22)}
 .support a:hover{background:rgba(24,48,28,.5)}
 </style>
 </head>
-<div id="noise"></div>
-<style>
-#noise {
-  pointer-events:none;
-  position:fixed;
-  inset:0;
-  background: repeating-radial-gradient(circle,rgba(127,255,138,.015) 0,rgba(0,0,0,.02) 2px);
-  mix-blend-mode:overlay;
-  animation:noiseShift .8s steps(2,end) infinite;
-}
-@keyframes noiseShift {
-  0%,100%{opacity:.18}
-  50%{opacity:.23}
-}
-</style>
-
-  
-  <body>
+<body>
 <div class="wrap">
   <div class="term" role="application" aria-label="Vault-Tec Terminal">
     <div class="toggle" id="toggleMode">READER MODE: OFF</div>
 
     <div class="hdr">VAULT-TEC TERMINAL ACCESS</div>
-    <div class="sub">USER: Overseer • Use ↑/↓ or 1–9 • ENTER to open</div>
+    <div class="sub">USER: Overseer • Use ↑/↓ • ENTER to open chapter • Click titles to expand</div>
     <div class="rule"></div>
 
-    <!-- Top ad (optional) -->
     <div class="ad-frame">
       <div class="ad-label">SPONSORED TRANSMISSION</div>
-      <div class="ad-slot"><!-- AdSense unit goes here later --></div>
+      <div class="ad-slot"></div>
     </div>
 
-    <ul id="menu" class="menu" role="menu" aria-label="Stories Index">
-      <li class="item"><span class="idx">[1]</span><span class="title">No Home in the Waste — Chapter 1</span></li>
-      <li class="item"><span class="idx">[2]</span><span class="title">HP43 — Prologue</span></li>
-      <li class="item"><span class="idx">[3]</span><span class="title">Shelter 21 — Short</span></li>
-    </ul>
+    <ul id="menu" class="menu" role="menu" aria-label="Stories & Chapters"></ul>
 
-    <!-- Mid ad (optional) -->
     <div class="ad-frame">
       <div class="ad-label">SPONSORED TRANSMISSION</div>
-      <div class="ad-slot"><!-- AdSense unit goes here later --></div>
+      <div class="ad-slot"></div>
     </div>
 
-    <!-- Support buttons -->
     <div class="support">
       <a href="https://ko-fi.com/" target="_blank" rel="noopener">☕ Buy me a coffee</a>
       <a href="https://www.patreon.com/" target="_blank" rel="noopener">♥ Patreon</a>
@@ -137,37 +95,129 @@ body.reader .item{line-height:1.6}
     </div>
 
     <div class="status" aria-live="polite">
-      <div>INPUT: <span id="status">Select with arrows or number keys, ENTER to open</span></div>
+      <div>INPUT: <span id="status">Use ↑/↓ to navigate. ENTER opens a chapter.</span></div>
       <div>READY<span class="cursor">▌</span></div>
     </div>
   </div>
 </div>
 
 <script>
-// Links to your chapters (relative links on GitHub Pages)
-const LINKS = ["chapter1.html","hp43.html","shelter21.html"];
+/* ---- Configure your stories & chapters here ---- */
+const STORIES = [
+  {
+    title: "No Home in the Waste",
+    chapters: [
+      { title: "Chapter 1 — The Road Out of New York", href: "chapter1.html" },
+      // { title: "Chapter 2 — (soon)", href: "chapter2.html" },
+    ]
+  },
+  {
+    title: "HP43",
+    chapters: [
+      { title: "Prologue", href: "hp43.html" }
+    ]
+  },
+  {
+    title: "Shelter 21",
+    chapters: [
+      { title: "Short Story", href: "shelter21.html" }
+    ]
+  }
+];
 
-// Menu + status
-const items=[...document.querySelectorAll(".item")];
-const statusEl=document.getElementById("status");
-let i=0;
-function activate(n){
-  i=(n+items.length)%items.length;
-  items.forEach((el,idx)=>el.classList.toggle("active",idx===i));
-  const title=items[i].querySelector(".title")?.textContent||"";
-  statusEl.textContent="Selected: "+title;
+/* ---- Build the collapsible menu ---- */
+const menu = document.getElementById("menu");
+const statusEl = document.getElementById("status");
+
+function buildMenu(){
+  menu.innerHTML = "";
+  STORIES.forEach((story, sIdx)=>{
+    // Story header row
+    const liStory = document.createElement("li");
+    liStory.className = "item story";
+    liStory.setAttribute("role","menuitem");
+    liStory.dataset.type = "story";
+    liStory.dataset.index = sIdx;
+    liStory.innerHTML = `<span class="idx">[–]</span><span class="caret">▶</span><span class="title">${story.title}</span><span class="badge">${story.chapters.length} ch.</span>`;
+    menu.appendChild(liStory);
+
+    // Chapter rows (start hidden)
+    story.chapters.forEach((ch, cIdx)=>{
+      const liCh = document.createElement("li");
+      liCh.className = "item chapter";
+      liCh.setAttribute("role","menuitem");
+      liCh.dataset.type = "chapter";
+      liCh.dataset.s = sIdx;
+      liCh.dataset.c = cIdx;
+      liCh.style.display = "none";
+      liCh.innerHTML = `<span class="idx">[${cIdx+1}]</span><span class="title">${ch.title}</span>`;
+      menu.appendChild(liCh);
+    });
+  });
 }
-function openLink(){ if(LINKS[i]) location.href=LINKS[i]; }
-items.forEach((el,idx)=>{ el.addEventListener("mouseenter",()=>activate(idx)); el.addEventListener("click",openLink); });
-activate(0);
-window.addEventListener("keydown",e=>{
-  if(e.key==="ArrowDown")activate(i+1);
-  if(e.key==="ArrowUp")activate(i-1);
-  if(e.key==="Enter")openLink();
-  if(/^[0-9]$/.test(e.key)){ const n=(+e.key||10)-1; if(LINKS[n]){ activate(n); openLink(); } }
+buildMenu();
+
+/* ---- Expand / collapse ---- */
+function toggleStory(sIdx){
+  const rows = [...menu.querySelectorAll('.item.chapter')].filter(el => +el.dataset.s === +sIdx);
+  const header = [...menu.querySelectorAll('.item.story')][sIdx];
+  const open = rows[0] && rows[0].style.display !== "none";
+  rows.forEach(el => el.style.display = open ? "none" : "flex");
+  if(header){
+    const caret = header.querySelector(".caret");
+    if(caret) caret.textContent = open ? "▶" : "▾";
+  }
+}
+
+/* ---- Click handling ---- */
+menu.addEventListener("click",(e)=>{
+  const li = e.target.closest(".item");
+  if(!li) return;
+  if(li.dataset.type === "story"){
+    toggleStory(li.dataset.index);
+    setActiveFirstVisible();
+  }else if(li.dataset.type === "chapter"){
+    openChapter(li);
+  }
 });
 
-// Reader Mode (persist)
+/* ---- Keyboard navigation over visible chapter rows only ---- */
+function visibleChapters(){
+  return [...menu.querySelectorAll('.item.chapter')].filter(el => el.style.display !== "none");
+}
+let activeIdx = 0;
+function setActive(idx){
+  const vis = visibleChapters();
+  if(vis.length === 0) return;
+  activeIdx = (idx + vis.length) % vis.length;
+  vis.forEach((el,i)=> el.classList.toggle("active", i===activeIdx));
+  const t = vis[activeIdx].querySelector(".title")?.textContent || "";
+  statusEl.textContent = "Selected: " + t;
+}
+function setActiveFirstVisible(){
+  setActive(0);
+}
+function openChapter(el){
+  const s = +el.dataset.s, c = +el.dataset.c;
+  const href = STORIES[s].chapters[c].href;
+  if(href) window.location.href = href;
+}
+window.addEventListener("keydown",(e)=>{
+  const vis = visibleChapters();
+  if(e.key === "ArrowDown"){ setActive(activeIdx+1); }
+  if(e.key === "ArrowUp"){ setActive(activeIdx-1); }
+  if(e.key === "Enter" && vis.length){ openChapter(vis[activeIdx]); }
+  if(/^[1-9]$/.test(e.key)){
+    const n = (+e.key)-1;
+    if(vis[n]){ setActive(n); openChapter(vis[n]); }
+  }
+});
+
+/* Start with first story expanded */
+toggleStory(0);
+setActiveFirstVisible();
+
+/* Reader Mode */
 const t=document.getElementById('toggleMode');
 const pref=localStorage.getItem('readerMode')==='1';
 if(pref) document.body.classList.add('reader');
@@ -175,8 +225,8 @@ t.textContent='READER MODE: '+(document.body.classList.contains('reader')?'ON':'
 t.addEventListener('click',()=>{
   document.body.classList.toggle('reader');
   const on=document.body.classList.contains('reader');
-  t.textContent='READER MODE: '+(on?'ON':'OFF');
-  localStorage.setItem('readerMode',on?'1':'0');
+  t.textContent='READER MODE: '+(on?'ON' : 'OFF');
+  localStorage.setItem('readerMode', on ? '1' : '0');
 });
 </script>
 </body>
