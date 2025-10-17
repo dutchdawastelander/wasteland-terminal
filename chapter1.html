@@ -5,7 +5,8 @@
 <title>No Home in the Waste — Chapter 1: The Road Out of New York</title>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
-<style>:root{--bg:#0c0f0c;--txt:#a6f8b5;--dim:#6fae83}
+<style>
+:root{--bg:#0c0f0c;--txt:#a6f8b5;--dim:#6fae83}
 html,body{margin:0;background:var(--bg);color:var(--txt);font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.7;font-size:18px}
 body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.14)0,rgba(0,0,0,.14)2px,transparent4px);pointer-events:none;mix-blend-mode:soft-light;opacity:.18}
 header{text-align:center;padding:40px 20px 12px;font-family:"VT323",monospace;font-size:clamp(28px,5vw,44px);letter-spacing:.05em}
@@ -20,7 +21,8 @@ button.link{background:transparent;border:1px solid rgba(127,255,138,.4);color:v
 button.link:hover{background:rgba(24,48,28,.45)}
 .progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(127,255,138,.18)}
 .bar{height:4px;width:0%;background:var(--txt);box-shadow:0 0 6px rgba(127,255,138,.5)}
-.navbtns{display:flex;gap:8px}</style>
+.navbtns{display:flex;gap:8px}
+</style>
 </head>
 <body>
 <header>
@@ -29,24 +31,22 @@ button.link:hover{background:rgba(24,48,28,.45)}
 </header>
 
 <main id="story">
+  <h2>Day 1 – Leaving the City</h2>
+  <p>The city didn’t fall in a single day. It just… decayed. Street by street, window by window, until it was nothing but a skeleton trying to remember what light felt like.</p>
+  <p>We left at dawn. Smoke rolled across the river, heavy and low. The Holland Tunnel was half-flooded, but the car still ran. Every time the tires hit something under the water, I told myself it was debris.</p>
+  <p>She stared out the window the whole way. Hands folded. Jaw tight. We haven’t spoken much since the loss. Silence travels with us now like a third passenger.</p>
+  <p>Outside the city, the air changed—thinner, cleaner, sharp in my lungs. For a moment it almost felt like hope, but hope doesn’t last long anymore.</p>
 
-<h2>Day 1 – Leaving the City</h2>
-<p>The city didn’t fall in a single day. It just… decayed. Street by street, window by window, until it was nothing but a skeleton trying to remember what light felt like.</p>
-<p>We left at dawn. Smoke rolled across the river, heavy and low. The Holland Tunnel was half-flooded, but the car still ran. Every time the tires hit something under the water, I told myself it was debris.</p>
-<p>She stared out the window the whole way. Hands folded. Jaw tight. We haven’t spoken much since the loss. Silence travels with us now like a third passenger.</p>
-<p>Outside the city, the air changed—thinner, cleaner, sharp in my lungs. For a moment it almost felt like hope, but hope doesn’t last long anymore.</p>
+  <h2>Day 2 – Turnpike</h2>
+  <p>The highway stretched out like an old scar. We passed collapsed bridges, rusted cars, and homes with curtains still hanging in shattered windows—ghosts of lives that stopped mid-sentence.</p>
+  <p>Every now and then she’d point at something—a billboard, a bird—and then stop herself, as if remembering it doesn’t matter anymore.</p>
+  <p>At sunset we found an overpass and built a fire beneath it. The light caught her face—she looked older than yesterday. She asked quietly, “How do we go on without him?” I didn’t have an answer.</p>
 
-<h2>Day 2 – Turnpike</h2>
-<p>The highway stretched out like an old scar. We passed collapsed bridges, rusted cars, and homes with curtains still hanging in shattered windows—ghosts of lives that stopped mid-sentence.</p>
-<p>Every now and then she’d point at something—a billboard, a bird—and then stop herself, as if remembering it doesn’t matter anymore.</p>
-<p>At sunset we found an overpass and built a fire beneath it. The light caught her face—she looked older than yesterday. She asked quietly, “How do we go on without him?” I didn’t have an answer.</p>
-
-<h2>Day 3 – Rest Stop</h2>
-<p>We camped in a burned-out rest area tonight. One wall still stood. I broke up a table for kindling.</p>
-<p>She sat across from me, turning her ring again and again in the firelight. I kept my eyes on the flame and wrote this down:</p>
-<p><em>The road only goes forward now. Whether we want it to or not.</em></p>
-<p>Tomorrow we head south, toward the mountains. Toward something still alive.</p>
-
+  <h2>Day 3 – Rest Stop</h2>
+  <p>We camped in a burned-out rest area tonight. One wall still stood. I broke up a table for kindling.</p>
+  <p>She sat across from me, turning her ring again and again in the firelight. I kept my eyes on the flame and wrote this down:</p>
+  <p><em>The road only goes forward now. Whether we want it to or not.</em></p>
+  <p>Tomorrow we head south, toward the mountains. Toward something still alive.</p>
 </main>
 
 <footer>
@@ -59,14 +59,15 @@ button.link:hover{background:rgba(24,48,28,.45)}
 </footer>
 
 <script>
+// Reading progress
 const bar=document.getElementById('bar'), txt=document.getElementById('progress-text');
 window.addEventListener('scroll',()=>{ const h=document.documentElement;
   const pct=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;
   bar.style.width=pct+"%"; txt.textContent=Math.round(pct)+"%"; });
 
-const NEXT="chapter2.html";
-const btn=document.getElementById('nextBtn');
-if(NEXT){ btn.onclick=()=>location.href=NEXT; } else { btn.disabled=true; }
+// Wire up Next button (Chapter 2)
+const NEXT = "chapter2.html";
+document.getElementById('nextBtn').onclick = ()=> location.href = NEXT;
 </script>
 </body>
 </html>
