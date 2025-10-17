@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>No Home in the Waste — Chapter 5: The Change</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>:root{--bg:#0c0f0c;--txt:#a6f8b5;--dim:#6fae83}
+html,body{margin:0;background:var(--bg);color:var(--txt);font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.7;font-size:18px}
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(to bottom,rgba(0,0,0,.14)0,rgba(0,0,0,.14)2px,transparent4px);pointer-events:none;mix-blend-mode:soft-light;opacity:.18}
+header{text-align:center;padding:40px 20px 12px;font-family:"VT323",monospace;font-size:clamp(28px,5vw,44px);letter-spacing:.05em}
+.subtitle{font-size:18px;color:var(--dim);margin:6px 0 18px}
+main{max-width:760px;margin:0 auto;padding:0 20px 90px;text-align:justify}
+p{margin:1.2em 0}
+h2{font-family:"VT323",monospace;font-weight:400;letter-spacing:.06em;color:var(--txt);margin:1.6em 0 .6em;font-size:24px}
+hr{border:none;height:1px;background:linear-gradient(90deg,var(--txt),transparent);opacity:.3;margin:2em 0}
+footer{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);
+border-top:1px solid rgba(127,255,138,.25);display:flex;gap:10px;align-items:center;justify-content:space-between;padding:6px 12px;font-family:"VT323",monospace;color:var(--dim)}
+button.link{background:transparent;border:1px solid rgba(127,255,138,.4);color:var(--txt);padding:6px 10px;border-radius:6px;cursor:pointer}
+button.link:hover{background:rgba(24,48,28,.45)}
+.progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(127,255,138,.18)}
+.bar{height:4px;width:0%;background:var(--txt);box-shadow:0 0 6px rgba(127,255,138,.5)}
+.navbtns{display:flex;gap:8px}</style>
+</head>
+<body>
+<header>
+  NO HOME IN THE WASTE
+  <div class="subtitle">Chapter 5 — The Change</div>
+</header>
+
+<main id="story">
+
+<h2>Day 54 – The Raid</h2>
+<p>The fever came fast, hard, and stayed. Cold packs, herbal tea—nothing worked. We needed real medicine.</p>
+<p>After three sleepless nights, I packed the knife and the rucksack. The old pharmacy was twenty miles east.</p>
+<p>Three scavengers had made it home. I moved quiet, knife in hand. When it was done, I was shaking—not from fear, but from how easy it had been.</p>
+<p>Then I heard a song. A broken lullaby on a loop. I followed it to a back room and found a little girl, clutching a cracked radio. She looked up and said, “Is my mom with you?” I told her no. She asked, “Can I come?” I said yes.</p>
+
+<h2>Day 55 – Back at the Cabin</h2>
+<p>When I carried her inside, my wife stirred. She smiled weakly and whispered, “He’s home.” I didn’t correct her.</p>
+<p>The girl’s laughter filled the place again. For a while, it felt almost right. We taught her to boil water, to draw, to hope.</p>
+<p>But the fever only grew worse. Her skin cracked, her eyes clouded. She stopped speaking in full sentences. Just whispers, low and strange.</p>
+
+<h2>Day 58 – The River</h2>
+<p>I went fishing this morning. She was asleep when I left. The girl was outside humming with her little radio.</p>
+<p>When I came back, the door was open.</p>
+<p>Blood on the walls. The girl on the floor. Her radio skipping on a single note.</p>
+<p>My wife stood over her, trembling, glowing faint green. She turned to me, smiling wrong. “Hungry,” she said.</p>
+<p>I raised the gun. “I’m sorry.” Then I pulled the trigger.</p>
+
+<h2>Day 59 – Ashes</h2>
+<p>I buried them together beside the memorial. When the graves were covered, I poured the last of the whisky over the dirt. Then I burned the cabin.</p>
+<p>The flames climbed quick—wood dry, air thick with rot and smoke. I stood there until the roof caved, until the world stopped glowing.</p>
+<p>There’s nothing left here but ghosts.</p>
+<p>I packed the journal, the knife, and started walking east. The sky is gray again. The air hums with that same broken note.</p>
+<p><strong>There is no home in the waste.</strong></p>
+
+</main>
+
+<footer>
+  <div class="navbtns">
+    <button class="link" onclick="location.href='index.html'">← RETURN TO TERMINAL</button>
+    <button class="link" id="nextBtn">END</button>
+  </div>
+  <span id="progress-text">0%</span>
+  <div class="progress"><div class="bar" id="bar"></div></div>
+</footer>
+
+<script>
+const bar=document.getElementById('bar'), txt=document.getElementById('progress-text');
+window.addEventListener('scroll',()=>{ const h=document.documentElement;
+  const pct=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;
+  bar.style.width=pct+"%"; txt.textContent=Math.round(pct)+"%"; });
+
+const NEXT="";
+const btn=document.getElementById('nextBtn');
+if(NEXT){ btn.onclick=()=>location.href=NEXT; } else { btn.disabled=true; }
+</script>
+</body>
+</html>
