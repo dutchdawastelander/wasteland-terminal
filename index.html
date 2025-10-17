@@ -37,23 +37,43 @@ body.reader .hdr{color:#a8e8b7}
 body.reader .item{line-height:1.6}
 
 /* ===== Subtle CRT animations ===== */
-.term{animation:crtFlicker 3.8s steps(2,end) infinite}
-.hdr,.item.active{
-  text-shadow:0 0 6px rgba(127,255,138,.25),0 0 18px rgba(127,255,138,.12);
-  animation:glowPulse 6s ease-in-out infinite
+.term {
+  animation: crtFlicker 3.8s steps(2,end) infinite;
 }
-.term::after{
-  content:"";position:absolute;left:0;right:0;height:2px;top:-2px;
-  background:linear-gradient(90deg,transparent,rgba(127,255,138,.25),transparent);
-  opacity:.08;pointer-events:none;border-radius:18px;
-  animation:scanRoll 7.5s linear infinite
+.hdr, .item.active {
+  text-shadow: 0 0 6px rgba(127,255,138,.25), 0 0 18px rgba(127,255,138,.12);
+  animation: glowPulse 6s ease-in-out infinite;
 }
-.cursor{text-shadow:0 0 8px rgba(127,255,138,.35)}
-@keyframes crtFlicker{0%,100%{filter:none;opacity:.995}35%{opacity:1}70%{opacity:.992}}
-@keyframes glowPulse{0%,100%{text-shadow:0 0 6px rgba(127,255,138,.23),0 0 16px rgba(127,255,138,.10)}
-50%{text-shadow:0 0 8px rgba(127,255,138,.32),0 0 22px rgba(127,255,138,.16)}}
-@keyframes scanRoll{0%{top:-2px}100%{top:100%}}
-@media (prefers-reduced-motion:reduce){.term,.hdr,.item.active,.term::after,.cursor{animation:none!important}}
+.term::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  top: -2px;
+  background: linear-gradient(90deg,transparent,rgba(127,255,138,.25),transparent);
+  opacity: .08;
+  pointer-events: none;
+  border-radius: 18px;
+  animation: scanRoll 7.5s linear infinite;
+}
+.cursor {
+  text-shadow: 0 0 8px rgba(127,255,138,.35);
+}
+@keyframes crtFlicker {
+  0%,100%{filter:none;opacity:.995}
+  35%{opacity:1}
+  70%{opacity:.992}
+}
+@keyframes glowPulse {
+  0%,100%{text-shadow:0 0 6px rgba(127,255,138,.23),0 0 16px rgba(127,255,138,.10)}
+  50%{text-shadow:0 0 8px rgba(127,255,138,.32),0 0 22px rgba(127,255,138,.16)}
+}
+@keyframes scanRoll {
+  0%{top:-2px}
+  100%{top:100%}
+}
+
 
 /* Ad frames (style only; add AdSense later) */
 .ad-frame{border:1px solid rgba(127,255,138,.35);background:rgba(8,16,8,.22);border-radius:8px;padding:8px;margin:14px 0;box-shadow:0 0 8px rgba(127,255,138,.08) inset}
