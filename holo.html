@@ -3,111 +3,186 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>HOLOSIM // Vault-Tec Training Module</title>
+<title>Vault-Tec Records — Terminal Access</title>
+
+<!-- AdSense (leave as-is; replace client if needed) -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6783128125276286" crossorigin="anonymous"></script>
+
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+
 <style>
-:root{{--ph:#7fff8a;--dim:#4db56b}}
-html,body{{background:#000;margin:0;font-family:"VT323",monospace;color:var(--ph)}}
-.screen{{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}}
-.term{{width:min(1000px,96vw);min-height:70vh;border-radius:18px;background:#010402;position:relative;padding:18px 18px 70px;
-box-shadow:inset 0 0 80px rgba(0,0,0,.8),0 30px 80px rgba(0,0,0,.9)}}
-.term:before{{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,.25) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.35}}
-.hdr{{font-size:26px;letter-spacing:.08em;margin:0 0 6px;text-shadow:0 0 6px rgba(127,255,138,.4)}}
-.out{{white-space:pre-wrap;line-height:1.45;height:52vh;overflow:auto;border:1px solid rgba(127,255,138,.25);padding:10px;border-radius:10px;background:rgba(8,16,10,.18)}}
-.prompt{{display:flex;gap:10px;margin-top:10px}}
-input{{flex:1;background:#000;border:1px solid rgba(127,255,138,.45);color:var(--ph);padding:8px;border-radius:8px;font-family:inherit;font-size:18px}}
-button{{border:1px solid rgba(127,255,138,.45);background:rgba(8,16,10,.25);color:var(--ph);padding:8px 10px;border-radius:8px;cursor:pointer}}
-button:hover{{background:rgba(24,48,28,.45)}}
-.footer{{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;color:#69ff9b80;display:flex;justify-content:space-between;border-top:1px solid rgba(127,255,138,.18)}}
-.help{{font-size:14px}}
-a{{color:#7fff8a}}
+:root{
+  --ph:#7fff8a; --dim:#4db56b; --scan:rgba(0,0,0,.22);
+}
+*{box-sizing:border-box}
+html,body{background:#000;margin:0;color:var(--ph);font-family:"VT323",monospace}
+.wrapper{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);
+}
+.term{
+  width:min(1100px,95vw);height:min(740px,93vh);position:relative;background:#020402;border-radius:22px;padding:24px 24px 46px;
+  box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);
+  transform:perspective(1200px) rotateX(2deg);
+  border:1px solid rgba(127,255,138,.2);
+}
+.term:before{
+  content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);
+  mix-blend-mode:soft-light;opacity:.32
+}
+.term:after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);
+  background-size:6px 6px;mix-blend-mode:soft-light;opacity:.4;animation:crtFlicker 2.8s steps(2,end) infinite
+}
+.scanbar{
+  position:absolute;left:0;right:0;height:2px;top:-2px;
+  background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);
+  opacity:.13;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3
+}
+.hdr{margin:0 0 6px;letter-spacing:.08em;font-size:32px;text-transform:uppercase;text-shadow: 0 0 6px rgba(127,255,138,.45), 0 0 18px rgba(127,255,138,.18)}
+.sub{color:var(--dim);margin-bottom:10px}
+.rule{height:1px;background:linear-gradient(90deg,var(--ph),transparent);opacity:.55;margin:8px 0 14px}
+.menu{
+  list-style:none;padding:0;margin:0;display:grid;gap:10px;position:relative;z-index:4;max-height:62vh;overflow:auto
+}
+.item{
+  display:flex;gap:10px;align-items:center;cursor:pointer;border:1px solid rgba(127,255,138,.28);background:rgba(8,16,10,.22);
+  padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: background .15s linear, outline-color .15s linear, transform .06s;
+}
+.item:hover{ background:rgba(24,48,28,.4) }
+.item:active{ transform:translateY(1px) }
+.item.active{
+  outline:2px solid rgba(127,255,138,.75); background:rgba(24,48,28,.55);
+  text-shadow: 0 0 6px rgba(127,255,138,.5), 0 0 20px rgba(127,255,138,.22);
+}
+.item.story{font-size:24px}
+.idx{width:2.2em;text-align:center}
+.badge{margin-left:auto;color:var(--dim);font-size:18px}
+.caret{width:1.2em;display:inline-block}
+.item.chapter{margin-left:32px;border-style:dashed;display:none}
+.item.chapter .idx{opacity:.75}
+.status{
+  position:absolute;left:0;right:0;bottom:0;padding:10px 16px;z-index:4;color:var(--dim);
+  background:linear-gradient(0deg,rgba(10,20,12,.65),rgba(10,20,12,0));
+  display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(127,255,138,.18)
+}
+.cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
+.toggle{
+  position:absolute;top:10px;right:14px;border:1px solid rgba(127,255,138,.45);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:18px;z-index:5;background:rgba(0,0,0,.25);color:var(--ph)
+}
+.toggle:hover{background:rgba(24,48,28,.4)}
+.secret{
+  position:absolute;right:12px;bottom:12px;color:#62ffaa80;text-decoration:none;font-size:14px
+}
+.secret:hover{color:#7fff8a}
+@keyframes roll{0%{top:-2px}100%{top:100%}}
+@keyframes crtFlicker{0%,100%{opacity:.58}50%{opacity:.64}}
+@keyframes blink{50%{opacity:0}}
 </style>
 </head>
 <body>
-<div class="screen">
-  <div class="term" role="application" aria-label="HOLOSIM">
-    <div class="hdr">HOLOSIM // Vault-Tec Training Module v0.3</div>
-    <div id="out" class="out" tabindex="0"></div>
-    <div class="prompt">
-      <input id="inp" placeholder="type: look / go north / take toolkit / use keypad 0042 / help" autocomplete="off"/>
-      <button id="send">RUN</button>
+<div class="wrapper">
+  <div class="term" role="application" aria-label="Vault-Tec Terminal">
+    <div class="scanbar"></div>
+    <button class="toggle" id="toggleMode" type="button">READER MODE: OFF</button>
+    <div class="hdr">VAULT-TEC RECORDS — TERMINAL ACCESS</div>
+    <div class="sub">USER: Overseer • Click story to expand • ENTER opens a chapter • 1–9 quick select</div>
+    <div class="rule"></div>
+
+    <ul id="menu" class="menu" role="menu" aria-label="Stories & Chapters"></ul>
+
+    <div class="status" aria-live="polite">
+      <div>INPUT: <span id="status">Use ↑/↓ to navigate chapters. ENTER to open.</span></div>
+      <div>READY<span class="cursor">▌</span></div>
     </div>
-    <div class="footer"><span class="help">Verbs: look, go, take, use, talk, inventory, hint.</span><a href="index.html">return to terminal</a></div>
+
+    <!-- Hidden game link -->
+    <a href="holo.html" class="secret" aria-label="Hidden utility">load holo</a>
   </div>
 </div>
+
 <script>
-const out=document.getElementById('out'); const inp=document.getElementById('inp'); const send=document.getElementById('send');
-function println(t=""){{ out.textContent += t + "\\n"; out.scrollTop = out.scrollHeight; }}
-function title(){{ 
- println("=== HOLOSIM INITIALIZED ===");
- println("You awaken in a dim vault antechamber. A green cursor blinks on a dead terminal. A steel door leads NORTH. A maintenance hatch lies EAST. A shadow hums behind a grated vent to the WEST.");
- println("Type 'help' for verbs.");
-}}
-const state={{room:"antechamber", inventory:new Set(), flags:{{}} }};
-const ROOMS = {{
-  "antechamber": {{
-     look: "The antechamber smells of dust and ozone. The terminal flickers but does not boot. The vault door NORTH is sealed. EAST a hatch. WEST a vent.",
-     exits: {{"north":"blastdoor","east":"hatch","west":"vent"}}
-  }},
-  "blastdoor": {{
-     look: "A massive blast door blocks your way. A keypad awaits a 4-digit code. A note is taped here: 'CYCLES RESET AT FORTY-__'.",
-     exits: {{}}
-  }},
-  "hatch": {{
-     look: "A cramped crawlspace with a fallen TOOLKIT. Pipes whisper. You can crawl back WEST.",
-     exits: {{"west":"antechamber"}},
-     item: "toolkit"
-  }},
-  "vent": {{
-     look: "A grated vent hums with faint radio static. Something gleams inside. SOUTH returns.",
-     exits: {{"south":"antechamber"}},
-     item: "keycard"
-  }}
-}};
-function handle(cmd){{
-  const t = cmd.trim().toLowerCase();
-  if(!t) return;
-  if(t==="help") return println("Verbs: look, go <dir>, take <item>, use <thing>, inventory, hint");
-  if(t==="inventory") return println("You carry: "+(state.inventory.size? [...state.inventory].join(', '):"nothing"));
-  if(t==="hint") return println("Numbers matter in Harper's Ferry. Try 'use keypad 0042' at the blast door.");
-  if(t==="look") return println(ROOMS[state.room].look||"You see nothing special.");
-  if(t.startsWith("go ")){{ 
-     const dir=t.split(" ").slice(1).join(" ");
-     const to=ROOMS[state.room].exits && ROOMS[state.room].exits[dir];
-     if(!to) return println("You can't go that way.");
-     state.room=to; return println(ROOMS[state.room].look||"...");
-  }}
-  if(t.startsWith("take ")){{ 
-     const what=t.split(" ").slice(1).join(" ");
-     const r=ROOMS[state.room];
-     if(r.item===what){{ 
-       state.inventory.add(what); delete r.item;
-       return println("Taken.");
-     }} else {{ 
-       return println("You don't see that here.");
-     }}
-  }}
-  if(t.startsWith("use ")){{ 
-     const what=t.split(" ").slice(1).join(" ");
-     if(state.room==="vent" && what==="toolkit" && state.inventory.has("toolkit")){{ 
-        state.inventory.add("keycard"); return println("You unbolt the grate and retrieve a KEYCARD.");
-     }}
-     if(state.room==="blastdoor"){{ 
-        if(what==="keypad 42" || what==="42" || what==="keypad 0042" || what==="0042"){{ 
-          return println("The keypad chirps. The door unlocks with a seismic sigh. A corridor beyond displays: 'CYCLE // 44 // INIT... OK'. Congratulations, Overseer.");
-        }}
-        if(what.startsWith("keypad")) return println("The keypad buzzes angrily. Wrong code.");
-     }}
-     return println("Nothing happens.");
-  }}
-  if(t==="talk"||t.startsWith("talk ")) return println("Your voice echoes. No answer.");
-  return println("Command not recognized. Type 'help'.");
-}}
-title();
-send.onclick=()=>{{ println("> "+inp.value); handle(inp.value); inp.value=""; inp.focus(); }};
-inp.addEventListener("keydown",e=>{{ if(e.key==="Enter") send.click(); }});
-inp.focus();
+// ---- DATA: keep these filenames exactly as they exist in your repo ----
+const STORIES=[
+  {title:"No Home in the Waste",chapters:[
+    {title:"Chapter 1 — The Road Out of New York",href:"no-home-in-the-waste-chapter-1-the-road-out-of-new-york.html"},
+    {title:"Chapter 2 — The Cabin",href:"no-home-in-the-waste-chapter-2-the-cabin.html"},
+    {title:"Chapter 3 — The Memorial",href:"no-home-in-the-waste-chapter-3-the-memorial.html"},
+    {title:"Chapter 4 — The Green Sky",href:"no-home-in-the-waste-chapter-4-the-green-sky.html"},
+    {title:"Chapter 5 — The Change",href:"no-home-in-the-waste-chapter-5-the-change.html"}
+  ]},
+  {title:"Fallout: Harper’s Ferry (HF43)",chapters:[
+    {title:"Chapter 1 — The Good Life in Harper’s Ferry",href:"hf43-chapter-1-the-good-life-in-harper-s-ferry.html"},
+    {title:"Chapter 2 — Erased",href:"hf43-chapter-2-erased.html"},
+    {title:"Chapter 3 — The Forgotten Tunnels",href:"hf43-chapter-3-the-forgotten-tunnels.html"},
+    {title:"Chapter 4 — Forty-Two",href:"hf43-chapter-4-forty-two.html"},
+    {title:"Chapter 5 — The Founder",href:"hf43-chapter-5-the-founder.html"},
+    {title:"Chapter 6 — Year One",href:"hf43-chapter-6-year-one.html"},
+    {title:"Chapter 7 — The Founder (Tightened)",href:"hf43-chapter-7-the-founder-tightened.html"},
+    {title:"Chapter 8 — Aimee",href:"hf43-chapter-8-aimee.html"}
+  ]}
+];
+
+const menu=document.getElementById("menu"),statusEl=document.getElementById("status");
+
+function buildMenu(){
+  menu.innerHTML="";
+  STORIES.forEach((story,sIdx)=>{
+    const liStory=document.createElement("li");
+    liStory.className="item story"; liStory.dataset.type="story"; liStory.dataset.index=sIdx; liStory.setAttribute("role","menuitem");
+    liStory.innerHTML=`<span class="idx">[–]</span><span class="caret">▾</span><span class="title">${story.title}</span><span class="badge">${story.chapters.length} ch.</span>`;
+    menu.appendChild(liStory);
+    story.chapters.forEach((ch,cIdx)=>{
+      const liCh=document.createElement("li");
+      liCh.className="item chapter"; liCh.dataset.type="chapter"; liCh.dataset.s=sIdx; liCh.dataset.c=cIdx; liCh.setAttribute("role","menuitem");
+      liCh.style.display="none"; liCh.innerHTML=`<span class="idx">[${cIdx+1}]</span><span class="title">${ch.title}</span>`;
+      menu.appendChild(liCh);
+    });
+  });
+}
+buildMenu();
+
+function chaptersOfStory(sIdx){ return [...menu.querySelectorAll('.item.chapter')].filter(el=>+el.dataset.s===+sIdx); }
+function toggleStory(sIdx){
+  const rows=chaptersOfStory(sIdx); const header=[...menu.querySelectorAll('.item.story')][sIdx];
+  const open=rows[0] && rows[0].style.display!=="none";
+  rows.forEach(el=>el.style.display=open?"none":"flex");
+  const caret=header?.querySelector(".caret"); if(caret) caret.textContent=open?"▶":"▾";
+  if(!open) setActiveFirstVisible();
+}
+menu.addEventListener("click",(e)=>{
+  const li=e.target.closest(".item"); if(!li) return;
+  if(li.dataset.type==="story") toggleStory(li.dataset.index);
+  if(li.dataset.type==="chapter") openChapter(li);
+});
+function visibleChapters(){ return [...menu.querySelectorAll('.item.chapter')].filter(el=>el.style.display!=="none"); }
+let activeIdx=0;
+function setActive(idx){
+  const vis=visibleChapters(); if(!vis.length) return;
+  activeIdx=(idx+vis.length)%vis.length; vis.forEach((el,i)=>el.classList.toggle("active",i===activeIdx));
+  const t=vis[activeIdx].querySelector(".title")?.textContent||""; statusEl.textContent="Selected: "+t;
+}
+function setActiveFirstVisible(){ setActive(0); }
+function openChapter(el){
+  const s=+el.dataset.s,c=+el.dataset.c; const href=STORIES[s].chapters[c].href; if(href) location.href=href;
+}
+window.addEventListener("keydown",(e)=>{
+  const vis=visibleChapters();
+  if(e.key==="ArrowDown"){ setActive(activeIdx+1); e.preventDefault(); }
+  if(e.key==="ArrowUp"){   setActive(activeIdx-1); e.preventDefault(); }
+  if(e.key==="Enter" && vis.length) openChapter(vis[activeIdx]);
+  if(/^[1-9]$/.test(e.key)){ const n=(+e.key)-1; if(vis[n]){ setActive(n); openChapter(vis[n]); } }
+});
+
+// Expand first story by default
+toggleStory(0); setActiveFirstVisible();
+
+// (Optional) Reader mode toggle (kept for parity; no alternate stylesheet needed on index)
+const t=document.getElementById('toggleMode');
+t.onclick=()=>{alert('Reader mode is for chapter pages.');};
 </script>
 </body>
 </html>
