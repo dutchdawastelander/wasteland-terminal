@@ -17,6 +17,7 @@
     .panel{border:1px solid var(--dim);border-radius:16px;padding:16px;box-shadow:0 0 0 1px var(--dim) inset}
     .btn{border:1px solid var(--dim);background:transparent;color:var(--fg);padding:6px 10px;border-radius:10px;cursor:pointer}
     .hidden{display:none} .foot{opacity:.8;font-size:.9em} .status{font-weight:700}
+    /* CRT scanlines */
     .scanlines::before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(0deg,var(--scan) 1px,transparent 1px) repeat;background-size:100% 3px;mix-blend-mode:soft-light;opacity:.35}
     @media (prefers-reduced-motion: reduce){ .scanlines{display:none} }
     /* Boot overlay */
@@ -39,6 +40,7 @@
     .chap-list{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}
     .chap-list a{color:var(--fg);text-decoration:none;border:1px solid var(--dim);border-radius:10px;padding:6px 8px;display:flex;justify-content:space-between}
     .chap-list a:hover{background:rgba(255,255,255,.04)}
+    .chap-missing{opacity:.6}
   </style>
 </head>
 <body>
@@ -72,11 +74,18 @@
   </footer>
 
   <script>
-    /* ========================== DATA (YOUR FILES) ========================== */
-    // Uses your flat files exactly as they exist in the repo.
-    // ✅ hf43 chapters (exact filenames from your screenshot)
+    /* ==================== BOOT-RESILIENT INDEX (NO FREEZE) ==================== */
+    const el = s => document.querySelector(s);
+    const els = s => Array.from(document.querySelectorAll(s));
+    const safe = fn => { try { fn(); } catch(_) {} };
+
+    const statusEl  = el('#status');
+    function setStatus(t){ if(statusEl){ statusEl.textContent = (t||'READY')+'▌'; } }
+
+    // ---- Data: point at your actual flat HTML files in the repo root.
+    // Harper’s Ferry (HF43) — exact names from your screenshot
     const HF43 = [
-      { title: "Chapter 1 — The Good Life in Harper’s Ferry", href: "hf43-chapter-1-the-good-life-in-harper-s-ferry.html" }, // confirm name
+      { title: "Chapter 1 — The Good Life in Harper’s Ferry", href: "hf43-chapter-1-the-good-life-in-harper-s-ferry.html" },
       { title: "Chapter 2 — Erased",                           href: "hf43-chapter-2-erased.html" },
       { title: "Chapter 3 — The Forgotten Tunnels",            href: "hf43-chapter-3-the-forgotten-tunnels.html" },
       { title: "Chapter 4 — Forty-Two",                        href: "hf43-chapter-4-forty-two.html" },
@@ -86,44 +95,67 @@
       { title: "Chapter 8 — Aimee",                            href: "hf43-chapter-8-aimee.html" }
     ];
 
-    // ✅ Shelter 21 single
+    // Shelter 21 + Holotape singles (present in your repo)
     const SHELTER21 = [{ title: "Shelter 21 Café", href: "shelter21.html" }];
+    const HOLO      = [{ title: "Holotape",        href: "holo.html" }];
 
-    // ✅ Holo (single holotape page)
-    const HOLO = [{ title: "Holotape", href: "holo.html" }];
-
-    // ✅ No Home in the Waste (please double-check filenames; update if needed)
-    const WASTE = [
-      { title: "Chapter 1 — The Road …",   href: "no-home-in-the-waste-chapter-1-the-road-.html" },    // TODO: confirm exact filename
-      { title: "Chapter 2 — The Cabin …",  href: "no-home-in-the-waste-chapter-2-the-cabin-.html" },   // TODO
-      { title: "Chapter 3 — The Memory …", href: "no-home-in-the-waste-chapter-3-the-mem-.html" },     // TODO
-      { title: "Chapter 4 — The Green …",  href: "no-home-in-the-waste-chapter-4-the-gree-.html" },    // TODO
-      { title: "Chapter 5 — The Change …", href: "no-home-in-the-waste-chapter-5-the-chan-.html" }     // TODO
+    // No Home in the Waste — filenames in screenshot are truncated; we’ll auto-discover.
+    // Give each chapter a set of likely prefixes; we’ll probe and keep the first that exists.
+    const WASTE_PREFIXES = [
+      { title: "Chapter 1 — The Road",   candidates: ["no-home-in-the-waste-chapter-1-the-road",  "no-home-in-the-waste-chapter-1-"] },
+      { title: "Chapter 2 — The Cabin",  candidates: ["no-home-in-the-waste-chapter-2-the-cabin", "no-home-in-the-waste-chapter-2-"] },
+      { title: "Chapter 3 — The Memory", candidates: ["no-home-in-the-waste-chapter-3-the-mem",   "no-home-in-the-waste-chapter-3-"] },
+      { title: "Chapter 4 — The Green",  candidates: ["no-home-in-the-waste-chapter-4-the-gree",  "no-home-in-the-waste-chapter-4-"] },
+      { title: "Chapter 5 — The Change", candidates: ["no-home-in-the-waste-chapter-5-the-chan",  "no-home-in-the-waste-chapter-5-"] }
     ];
 
+    // Helper to try possible filenames (same folder). We test a few common suffixes.
+    async function resolveChapterHref(prefixes){
+      const suffixes = [".html", ".htm", ".xhtml", ".HTML"];
+      for(const p of prefixes){
+        for(const s of suffixes){
+          const url = `${p}${s}`;
+          try{
+            const r = await fetch(url, {method:'HEAD', cache:'no-store'});
+            if(r.ok) return url;
+          }catch(_){}
+        }
+      }
+      return null;
+    }
+
+    async function buildWasteList(){
+      const list = [];
+      for(const ch of WASTE_PREFIXES){
+        const href = await resolveChapterHref(ch.candidates);
+        list.push({ title: ch.title, href, missing: !href });
+      }
+      return list;
+    }
+
+    // Final story list (we’ll fill WASTE dynamically)
     const STORIES = [
       { title: "HF43 — Harper’s Ferry Mystery", chapters: HF43 },
-      { title: "No Home in the Waste", chapters: WASTE },
+      { title: "No Home in the Waste", chapters: null }, // filled later
       { title: "Shelter 21 Café", chapters: SHELTER21 },
       { title: "Holotape", chapters: HOLO }
     ];
 
-    /* ============================ BOOT SEQUENCE ============================ */
-    const el = s => document.querySelector(s);
-    const els = s => Array.from(document.querySelectorAll(s));
-    const bootEl = el('#boot'), bootLogo = el('#boot-logo'), bootLines = el('#boot-lines');
-    const bootBar = el('.boot-progress>i'), bootSkip = el('#boot-skip');
-    const statusEl = el('#status');
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    function setStatus(t){ if(statusEl) statusEl.textContent = (t||'READY')+'▌'; }
+    // ---- Boot animation (once per tab, 6s hard fallback)
+    const bootEl    = el('#boot');
+    const bootLogo  = el('#boot-logo');
+    const bootLines = el('#boot-lines');
+    const bootBar   = el('.boot-progress>i');
+    const bootSkip  = el('#boot-skip');
+    const reduced   = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const BOOT_TIMEOUT_MS = 6000;
 
     const BOOT_LOGO = String.raw`
  __     ___       _ _ _   _____            _                 _     
- \\ \\   / (_)_   _(_) | | | ____|_ __   ___| |__   ___   ___ | |__  
-  \\ \\ / /| \\ \\ / / | | | |  _| | '_ \\ / __| '_ \\ / _ \\ / _ \\| '_ \\ 
-   \\ V / | |\\ V /| | | | | |___| | | | (__| | | | (_) | (_) | |_) |
-    \\_/  |_| \\_/ |_|_|_| |_____|_| |_|\\___|_| |_|\\___/ \\___/|_.__/ 
+ \ \   / (_)_   _(_) | | | ____|_ __   ___| |__   ___   ___ | |__  
+  \ \ / /| \ \ / / | | | |  _| | '_ \ / __| '_ \ / _ \ / _ \| '_ \ 
+   \ V / | |\ V /| | | | | |___| | | | (__| | | | (_) | (_) | |_) |
+    \_/  |_| \_/ |_|_|_| |_____|_| |_|\___|_| |_|\___/ \___/|_.__/ 
 `;
     const BOOT_LINES = [
       "Initializing Vault-Tec interface ... OK",
@@ -135,56 +167,74 @@
     ];
 
     function typeLine(target, text, speed=12){
-      return new Promise(res=>{
-        if(reduced){ target.textContent += text + "\\n"; return res(); }
+      return new Promise(resolve=>{
+        if(!target){ return resolve(); }
+        if(reduced){ target.textContent += text + "\n"; return resolve(); }
         let i=0; const iv=setInterval(()=>{
           target.textContent += text[i++] || "";
-          if(i>=text.length){ clearInterval(iv); target.textContent += "\\n"; res(); }
+          if(i>=text.length){ clearInterval(iv); target.textContent += "\n"; resolve(); }
         }, speed);
       });
     }
+
+    let bootDone = false;
+    function endBoot(){
+      if(bootDone) return;
+      bootDone = true;
+      safe(()=> bootEl.classList.add('hidden'));
+      setStatus('READY');
+      renderMenu();
+    }
+
     async function runBoot(){
-      if(reduced){ bootEl.classList.add('hidden'); return; }
-      bootEl.classList.remove('hidden');
-      bootLogo.textContent = BOOT_LOGO;
+      // Skip if reduced motion or we already showed this in this tab
+      if(!bootEl || reduced || sessionStorage.getItem('vtr.bootSeen') === '1'){ endBoot(); return; }
+
+      const killer = setTimeout(endBoot, BOOT_TIMEOUT_MS); // failsafe
+      safe(()=> bootEl.classList.remove('hidden'));
+      safe(()=> bootLogo.textContent = BOOT_LOGO);
+
       for(let i=0;i<BOOT_LINES.length;i++){
         const line = document.createElement('div');
-        bootLines.appendChild(line);
+        safe(()=> bootLines.appendChild(line));
         await typeLine(line, BOOT_LINES[i]);
-        bootBar.style.width = Math.round(((i+1)/BOOT_LINES.length)*100) + "%";
-        await new Promise(r=>setTimeout(r, 140));
+        safe(()=> bootBar && (bootBar.style.width = Math.round(((i+1)/BOOT_LINES.length)*100)+'%'));
+        await new Promise(r=> setTimeout(r, 120));
       }
+      clearTimeout(killer);
+      sessionStorage.setItem('vtr.bootSeen', '1');
       endBoot();
     }
-    function endBoot(){ bootEl.classList.add('hidden'); renderMenu(); }
-    bootSkip.addEventListener('click', endBoot);
-    window.addEventListener('keydown', e=>{ if(e.key==='Escape' && !bootEl.classList.contains('hidden')) endBoot(); });
 
-    /* =============================== MENU UI =============================== */
+    safe(()=> bootSkip && bootSkip.addEventListener('click', endBoot));
+    window.addEventListener('keydown', e=>{ if(e.key==='Escape' && bootEl && !bootEl.classList.contains('hidden')) endBoot(); });
+
+    // ---- Render accordion
     function renderMenu(){
-      const acc = document.getElementById('acc');
-      if(!acc){
-        const container = document.querySelector('.panel');
-        const wrap = document.createElement('div');
-        wrap.id = 'acc'; wrap.className = 'accordion';
-        container.appendChild(wrap);
-      }
       const root = document.getElementById('acc');
-      root.innerHTML = STORIES.map(story => `
-        <div class="acc-item">
-          <div class="acc-header" role="button" aria-expanded="false" tabindex="0">
-            <span class="acc-arrow">▸</span>
-            <span class="acc-title">${story.title}</span>
-          </div>
-          <div class="acc-panel">
-            <ul class="chap-list">
-              ${story.chapters.map(c=>`<li><a href="${c.href}"><span>${c.title}</span><span>▶</span></a></li>`).join('')}
-            </ul>
-          </div>
-        </div>
-      `).join('');
+      if(!root) return;
 
-      // collapse all by default; toggle on click/Enter/Space
+      root.innerHTML = STORIES.map(story => {
+        const inner = (story.chapters||[]).map(c => {
+          if(c.missing){
+            return `<li><span class="chap-missing"><span>${c.title}</span><span>missing</span></span></li>`;
+          }
+          return `<li><a href="${c.href}"><span>${c.title}</span><span>▶</span></a></li>`;
+        }).join('');
+        return `
+          <div class="acc-item">
+            <div class="acc-header" role="button" aria-expanded="false" tabindex="0">
+              <span class="acc-arrow">▸</span>
+              <span class="acc-title">${story.title}</span>
+            </div>
+            <div class="acc-panel">
+              <ul class="chap-list">${inner}</ul>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      // collapse by default; toggle on click/Enter/Space
       els('.acc-header').forEach(h=>{
         const panel = h.parentElement.querySelector('.acc-panel');
         const arrow = h.querySelector('.acc-arrow');
@@ -195,17 +245,15 @@
           h.setAttribute('aria-expanded', String(open));
         }
         h.addEventListener('click', toggle);
-        h.addEventListener('keydown', (e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }});
+        h.addEventListener('keydown', e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggle(); }});
       });
-
-      setStatus('MENU');
     }
 
-    /* =============================== INIT ================================ */
+    // ---- Init: resolve “No Home in the Waste” filenames, then boot
     (async function init(){
       setStatus('BOOTING');
+      STORIES[1].chapters = await buildWasteList(); // fill “No Home in the Waste”
       await runBoot();
-      setStatus('READY');
     })();
   </script>
 </body>
