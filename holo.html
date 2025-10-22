@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>HOLOSIM // Vault-Tec Training Module</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6783128125276286" crossorigin="anonymous"></script>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{{--ph:#7fff8a;--dim:#4db56b}}
+html,body{{background:#000;margin:0;font-family:"VT323",monospace;color:var(--ph)}}
+.screen{{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}}
+.term{{width:min(1000px,96vw);min-height:70vh;border-radius:18px;background:#010402;position:relative;padding:18px 18px 70px;
+box-shadow:inset 0 0 80px rgba(0,0,0,.8),0 30px 80px rgba(0,0,0,.9)}}
+.term:before{{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,.25) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.35}}
+.hdr{{font-size:26px;letter-spacing:.08em;margin:0 0 6px;text-shadow:0 0 6px rgba(127,255,138,.4)}}
+.out{{white-space:pre-wrap;line-height:1.45;height:52vh;overflow:auto;border:1px solid rgba(127,255,138,.25);padding:10px;border-radius:10px;background:rgba(8,16,10,.18)}}
+.prompt{{display:flex;gap:10px;margin-top:10px}}
+input{{flex:1;background:#000;border:1px solid rgba(127,255,138,.45);color:var(--ph);padding:8px;border-radius:8px;font-family:inherit;font-size:18px}}
+button{{border:1px solid rgba(127,255,138,.45);background:rgba(8,16,10,.25);color:var(--ph);padding:8px 10px;border-radius:8px;cursor:pointer}}
+button:hover{{background:rgba(24,48,28,.45)}}
+.footer{{position:absolute;left:0;right:0;bottom:0;padding:8px 12px;color:#69ff9b80;display:flex;justify-content:space-between;border-top:1px solid rgba(127,255,138,.18)}}
+.help{{font-size:14px}}
+a{{color:#7fff8a}}
+</style>
+</head>
+<body>
+<div class="screen">
+  <div class="term" role="application" aria-label="HOLOSIM">
+    <div class="hdr">HOLOSIM // Vault-Tec Training Module v0.3</div>
+    <div id="out" class="out" tabindex="0"></div>
+    <div class="prompt">
+      <input id="inp" placeholder="type: look / go north / take toolkit / use keypad 0042 / help" autocomplete="off"/>
+      <button id="send">RUN</button>
+    </div>
+    <div class="footer"><span class="help">Verbs: look, go, take, use, talk, inventory, hint.</span><a href="index.html">return to terminal</a></div>
+  </div>
+</div>
+<script>
+const out=document.getElementById('out'); const inp=document.getElementById('inp'); const send=document.getElementById('send');
+function println(t=""){{ out.textContent += t + "\\n"; out.scrollTop = out.scrollHeight; }}
+function title(){{ 
+ println("=== HOLOSIM INITIALIZED ===");
+ println("You awaken in a dim vault antechamber. A green cursor blinks on a dead terminal. A steel door leads NORTH. A maintenance hatch lies EAST. A shadow hums behind a grated vent to the WEST.");
+ println("Type 'help' for verbs.");
+}}
+const state={{room:"antechamber", inventory:new Set(), flags:{{}} }};
+const ROOMS = {{
+  "antechamber": {{
+     look: "The antechamber smells of dust and ozone. The terminal flickers but does not boot. The vault door NORTH is sealed. EAST a hatch. WEST a vent.",
+     exits: {{"north":"blastdoor","east":"hatch","west":"vent"}}
+  }},
+  "blastdoor": {{
+     look: "A massive blast door blocks your way. A keypad awaits a 4-digit code. A note is taped here: 'CYCLES RESET AT FORTY-__'.",
+     exits: {{}}
+  }},
+  "hatch": {{
+     look: "A cramped crawlspace with a fallen TOOLKIT. Pipes whisper. You can crawl back WEST.",
+     exits: {{"west":"antechamber"}},
+     item: "toolkit"
+  }},
+  "vent": {{
+     look: "A grated vent hums with faint radio static. Something gleams inside. SOUTH returns.",
+     exits: {{"south":"antechamber"}},
+     item: "keycard"
+  }}
+}};
+function handle(cmd){{
+  const t = cmd.trim().toLowerCase();
+  if(!t) return;
+  if(t==="help") return println("Verbs: look, go <dir>, take <item>, use <thing>, inventory, hint");
+  if(t==="inventory") return println("You carry: "+(state.inventory.size? [...state.inventory].join(', '):"nothing"));
+  if(t==="hint") return println("Numbers matter in Harper's Ferry. Try 'use keypad 0042' at the blast door.");
+  if(t==="look") return println(ROOMS[state.room].look||"You see nothing special.");
+  if(t.startsWith("go ")){{ 
+     const dir=t.split(" ").slice(1).join(" ");
+     const to=ROOMS[state.room].exits && ROOMS[state.room].exits[dir];
+     if(!to) return println("You can't go that way.");
+     state.room=to; return println(ROOMS[state.room].look||"...");
+  }}
+  if(t.startsWith("take ")){{ 
+     const what=t.split(" ").slice(1).join(" ");
+     const r=ROOMS[state.room];
+     if(r.item===what){{ 
+       state.inventory.add(what); delete r.item;
+       return println("Taken.");
+     }} else {{ 
+       return println("You don't see that here.");
+     }}
+  }}
+  if(t.startsWith("use ")){{ 
+     const what=t.split(" ").slice(1).join(" ");
+     if(state.room==="vent" && what==="toolkit" && state.inventory.has("toolkit")){{ 
+        state.inventory.add("keycard"); return println("You unbolt the grate and retrieve a KEYCARD.");
+     }}
+     if(state.room==="blastdoor"){{ 
+        if(what==="keypad 42" || what==="42" || what==="keypad 0042" || what==="0042"){{ 
+          return println("The keypad chirps. The door unlocks with a seismic sigh. A corridor beyond displays: 'CYCLE // 44 // INIT... OK'. Congratulations, Overseer.");
+        }}
+        if(what.startsWith("keypad")) return println("The keypad buzzes angrily. Wrong code.");
+     }}
+     return println("Nothing happens.");
+  }}
+  if(t==="talk"||t.startsWith("talk ")) return println("Your voice echoes. No answer.");
+  return println("Command not recognized. Type 'help'.");
+}}
+title();
+send.onclick=()=>{{ println("> "+inp.value); handle(inp.value); inp.value=""; inp.focus(); }};
+inp.addEventListener("keydown",e=>{{ if(e.key==="Enter") send.click(); }});
+inp.focus();
+</script>
+</body>
+</html>
