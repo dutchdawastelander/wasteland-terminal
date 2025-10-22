@@ -1,151 +1,322 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXX"
-        crossorigin="anonymous"></script>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vault-Tec Records — Terminal Access</title>
 
-  
-  <title>Vault-Tec Terminal Access</title>
+<!-- AdSense bootstrap -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6783128125276286"
+     crossorigin="anonymous"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
 <style>
-:root{--ph:#7fff8a;--dim:#55b86d;--scan:rgba(0,0,0,.23);}
-html,body{background:#000;margin:0}
-.wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:#000;
-color:var(--ph);font-family:"VT323",monospace}
-.term{width:min(1024px,95vw);height:min(720px,93vh);position:relative;background:#020402;border-radius:18px;
-padding:24px;box-shadow:inset 0 0 40px rgba(0,0,0,.55),0 0 60px rgba(0,0,0,.8)}
-.term:before{content:"";position:absolute;inset:0;border-radius:18px;pointer-events:none;
-background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);
-mix-blend-mode:soft-light;opacity:.28}
-.hdr{margin:0 0 10px;letter-spacing:.08em;font-size:32px;text-transform:uppercase}
-.sub{color:var(--dim);margin-bottom:10px}
-.rule{height:1px;background:linear-gradient(90deg,var(--ph),transparent);opacity:.5;margin:8px 0 16px}
-.menu{list-style:none;padding:0;margin:0;display:grid;gap:10px;position:relative;z-index:1}
-.item{display:flex;gap:10px;align-items:center;cursor:pointer;border:1px solid rgba(127,255,138,.25);
-background:rgba(8,16,8,.22);padding:10px;border-radius:8px;font-size:22px}
-.item.active{outline:2px solid rgba(127,255,138,.6);background:rgba(24,48,28,.5)}
-.idx{width:2.2em;text-align:center}
-.badge{margin-left:auto;color:var(--dim);font-size:18px}
+/* ===== VTR: Vault-Tec Records CRT Terminal ===== */
+:root{
+  --ph:#7fff8a;          /* phosphor green */
+  --dim:#4db56b;         /* dim text */
+  --bg:#000;             /* screen off */
+  --glass:#0b140e;       /* glass tint */
+  --scan:rgba(0,0,0,.22);
+}
+
+html,body{margin:0;height:100%;background:#000;color:var(--ph);font-family:"VT323",monospace}
+*{box-sizing:border-box}
+
+.wrapper{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);
+  overflow:hidden;
+}
+
+/* Terminal shell with curvature + reflection */
+.terminal{
+  position:relative;
+  width:min(1100px,95vw); height:min(720px,93vh);
+  padding:24px 24px 60px;
+  background:
+    radial-gradient(120% 140% at 50% 10%, rgba(255,255,255,.06) 0%, rgba(255,255,255,0) 60%) /* top reflection */,
+    radial-gradient(160% 150% at 50% 120%, rgba(255,255,255,.025) 0%, rgba(255,255,255,0) 50%) /* bottom glow */,
+    linear-gradient(180deg, #0c170f 0%, #051108 100%);
+  border-radius:22px;
+  box-shadow:
+    inset 0 0 90px rgba(0,0,0,.9),
+    inset 0 0 24px rgba(0,0,0,.6),
+    0 30px 80px rgba(0,0,0,.9);
+  transform: perspective(1200px) rotateX(2deg); /* subtle CRT bow */
+  overflow:hidden;
+}
+
+/* Vignette */
+.terminal:before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(120% 120% at 50% 50%, rgba(0,0,0,0) 60%, rgba(0,0,0,.55) 100%);
+  z-index:3;
+}
+
+/* Scanlines + phosphor mask */
+.terminal:after{
+  content:""; position:absolute; inset:0; pointer-events:none; z-index:2;
+  background:
+    /* horizontal scanlines */
+    repeating-linear-gradient(to bottom,
+      rgba(0,0,0,.18) 0px, rgba(0,0,0,.18) 2px, transparent 3px, transparent 4px),
+    /* triad-ish phosphor dot feel */
+    radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) 0.5px, rgba(0,0,0,0) 0.6px);
+  background-size: auto, 6px 6px;
+  mix-blend-mode: soft-light;
+  opacity:.6;
+  animation: scanFlicker 2.7s steps(2,end) infinite;
+}
+
+/* Rolling scan bar */
+.scanbar{
+  position:absolute; left:0; right:0; height:2px; top:-2px; z-index:4; pointer-events:none;
+  background:linear-gradient(90deg, transparent, rgba(127,255,138,.6), transparent);
+  opacity:.13; filter:blur(.3px);
+  animation: roll 6.5s linear infinite;
+}
+
+/* Subtle jitter of the whole display */
+.jitter{ animation: jitter .9s infinite linear alternate; }
+
+/* Header + status */
+.header{font-size:34px; letter-spacing:.08em; margin:2px 0 6px; text-transform:uppercase;
+  text-shadow: 0 0 6px rgba(127,255,138,.45), 0 0 18px rgba(127,255,138,.18);}
+.sub{color:var(--dim); margin-bottom:12px}
+.rule{height:1px; background:linear-gradient(90deg,var(--ph),transparent); opacity:.55; margin:8px 0 14px}
+
+/* Menu */
+.menu{list-style:none; padding:0; margin:0; display:grid; gap:10px; position:relative; z-index:5}
+.item{display:flex; gap:10px; align-items:center; cursor:pointer;
+  border:1px solid rgba(127,255,138,.28); background:rgba(8,16,10,.22);
+  padding:10px 12px; border-radius:10px; font-size:22px; line-height:1.2;
+  transition: background .15s linear, outline-color .15s linear, transform .06s;
+}
+.item:hover{ background:rgba(24,48,28,.4) }
+.item:active{ transform:translateY(1px) }
+.item.active{
+  outline:2px solid rgba(127,255,138,.75); background:rgba(24,48,28,.55);
+  text-shadow: 0 0 6px rgba(127,255,138,.5), 0 0 20px rgba(127,255,138,.22);
+}
 .item.story{font-size:24px}
-.item.story .caret{width:1.2em;display:inline-block}
-.item.chapter{margin-left:32px;border-style:dashed}
-.item.chapter .idx{opacity:.7}
-.status{position:absolute;left:0;right:0;bottom:0;padding:10px 16px;z-index:1;color:var(--dim);
-background:linear-gradient(0deg,rgba(10,20,10,.55),rgba(10,20,10,0));display:flex;justify-content:space-between;align-items:center}
-.cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
-@keyframes blink{50%{opacity:0}}
-.toggle{position:absolute;top:10px;right:14px;border:1px solid rgba(127,255,138,.45);
-padding:6px 10px;border-radius:6px;cursor:pointer;font-size:18px}
-.toggle:hover{background:rgba(24,48,28,.5)}
-/* Reader Mode */
-body.reader{background:radial-gradient(1200px 800px at 50% 50%,#0e110f 0%,#0a0d0b 70%),#0a0d0b;color:#a8e8b7}
-body.reader .term{background:#0d100e;box-shadow:inset 0 0 24px rgba(0,0,0,.7),0 0 40px rgba(0,0,0,.7)}
-body.reader .term:before{opacity:.12}
-body.reader .hdr{color:#a8e8b7}
-body.reader .item{line-height:1.6}
-/* CRT animations */
-.term{animation:crtFlicker 3.8s steps(2,end) infinite}
-.hdr,.item.active{ text-shadow:0 0 6px rgba(127,255,138,.25),0 0 18px rgba(127,255,138,.12); animation:glowPulse 6s ease-in-out infinite}
-.term::after{content:"";position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.25),transparent);
-opacity:.08;pointer-events:none;border-radius:18px;animation:scanRoll 7.5s linear infinite}
-.cursor{text-shadow:0 0 8px rgba(127,255,138,.35)}
-@keyframes crtFlicker{0%,100%{filter:none;opacity:.995}35%{opacity:1}70%{opacity:.992}}
-@keyframes glowPulse{0%,100%{text-shadow:0 0 6px rgba(127,255,138,.23),0 0 16px rgba(127,255,138,.10)}
-50%{text-shadow:0 0 8px rgba(127,255,138,.32),0 0 22px rgba(127,255,138,.16)}}
-@keyframes scanRoll{0%{top:-2px}100%{top:100%}}
-@media (prefers-reduced-motion:reduce){.term,.hdr,.item.active,.term::after,.cursor{animation:none!important}}
+.idx{width:2.2em; text-align:center}
+.badge{margin-left:auto; color:var(--dim); font-size:18px}
+.caret{width:1.2em; display:inline-block}
+
+/* Chapters initially hidden until story toggled */
+.item.chapter{margin-left:32px; border-style:dashed; display:none}
+.item.chapter .idx{opacity:.75}
+
+/* Footer/status */
+.status{
+  position:absolute; left:0; right:0; bottom:0; z-index:6;
+  padding:10px 16px; color:var(--dim);
+  background:linear-gradient(0deg, rgba(10,20,12,.65), rgba(10,20,12,0));
+  display:flex; align-items:center; justify-content:space-between;
+  backdrop-filter: blur(2px);
+  border-top:1px solid rgba(127,255,138,.18);
+}
+.cursor{display:inline-block; width:.65em; animation:blink 1.05s steps(1,end) infinite}
+
+/* Reader Mode toggle */
+.toggle{
+  position:absolute; top:10px; right:14px; z-index:7;
+  border:1px solid rgba(127,255,138,.45); padding:6px 10px; border-radius:6px; cursor:pointer; font-size:18px;
+}
+.toggle:hover{ background:rgba(24,48,28,.4) }
+
+/* Reader Mode (less intense CRT for long reading) */
+body.reader .terminal{ transform:none; }
+body.reader .terminal:after{ opacity:.25; }
+body.reader .header{ text-shadow:none; }
+body.reader .jitter{ animation:none; }
+
+/* Animations */
+@keyframes roll{ 0%{top:-2px} 100%{top:100%} }
+@keyframes blink{ 50%{opacity:0} }
+@keyframes jitter{
+  0%{ transform: translateY(0px) }
+  100%{ transform: translateY(.4px) }
+}
+@keyframes scanFlicker{
+  0%{ opacity:.58; filter:none }
+  40%{ opacity:.66; filter:contrast(102%) saturate(103%) }
+  60%{ opacity:.6; filter:brightness(101%) }
+  70%{ opacity:.65 }
+  100%{ opacity:.58 }
+}
+
+/* Small helper for accessibility on reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .terminal,.terminal:after,.scanbar,.jitter{ animation:none!important }
+}
+
+/* Optional ad container style (empty by default; safe if you add a unit later) */
+.ad-slot{
+  margin:12px 0 2px; padding:6px; border:1px dashed rgba(127,255,138,.25);
+  border-radius:8px; text-align:center; color:var(--dim); font-size:16px;
+  background: rgba(8,16,10,.18);
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="term" role="application" aria-label="Vault-Tec Terminal">
-    <div class="toggle" id="toggleMode">READER MODE: OFF</div>
+<div class="wrapper">
+  <div class="terminal jitter" role="application" aria-label="Vault-Tec Terminal">
+    <div class="scanbar"></div>
+    <button class="toggle" id="toggleMode" type="button">READER MODE: OFF</button>
 
-    <div class="hdr">VAULT-TEC TERMINAL ACCESS</div>
-    <div class="sub">USER: Overseer • Click story to expand • ENTER opens a chapter</div>
+    <div class="header">VAULT-TEC RECORDS — TERMINAL ACCESS</div>
+    <div class="sub">USER: Overseer • Click story to expand • ENTER opens a chapter • 1–9 quick select</div>
     <div class="rule"></div>
+
+    <!-- Optional ad mount point (leave empty if you don’t have a slot yet) -->
+    <div class="ad-slot" id="adTop" aria-hidden="true"> </div>
 
     <ul id="menu" class="menu" role="menu" aria-label="Stories & Chapters"></ul>
 
     <div class="status" aria-live="polite">
-      <div>INPUT: <span id="status">Use ↑/↓ to navigate chapters. ENTER to open.</span></div>
+      <div>INPUT: <span id="status">Use ↑/↓ to navigate, ENTER to open.</span></div>
       <div>READY<span class="cursor">▌</span></div>
     </div>
   </div>
 </div>
 
 <script>
-const STORIES=[{title:"No Home in the Waste",chapters:[
-  {title:"Chapter 1 — The Road Out of New York",href:"chapter1.html"},
-  {title:"Chapter 2 — The Cabin",href:"chapter2.html"},
-  {title:"Chapter 3 — The Memorial",href:"chapter3.html"},
-  {title:"Chapter 4 — The Green Sky",href:"chapter4.html"},
-  {title:"Chapter 5 — The Change",href:"chapter5.html"}
-]}];
+/* -------- Data: Stories & Chapters -------- */
+const STORIES = [
+  { title: "No Home in the Waste", chapters: [
+    { title: "Chapter 1 — The Road Out of New York", href: "chapter1.html" },
+    { title: "Chapter 2 — The Cabin",               href: "chapter2.html" },
+    { title: "Chapter 3 — The Memorial",            href: "chapter3.html" },
+    { title: "Chapter 4 — The Green Sky",           href: "chapter4.html" },
+    { title: "Chapter 5 — The Change",              href: "chapter5.html" }
+  ]},
+  { title: "HP43", chapters: [
+    { title: "Prologue",   href: "hp43_prologue.html" },
+    { title: "Chapter 1",  href: "hp43_ch1.html" }
+  ]}
+];
 
-const menu=document.getElementById("menu"),statusEl=document.getElementById("status");
+/* -------- Build Menu (dropdown: Story → Chapters) -------- */
+const menu = document.getElementById("menu");
+const statusEl = document.getElementById("status");
+
 function buildMenu(){
-  menu.innerHTML="";
-  STORIES.forEach((story,sIdx)=>{
-    const liStory=document.createElement("li");
-    liStory.className="item story"; liStory.dataset.type="story"; liStory.dataset.index=sIdx;
-    liStory.innerHTML=`<span class="idx">[–]</span><span class="caret">▾</span><span class="title">${story.title}</span><span class="badge">${story.chapters.length} ch.</span>`;
+  menu.innerHTML = "";
+  STORIES.forEach((story, sIdx) => {
+    // Story row
+    const liStory = document.createElement("li");
+    liStory.className = "item story";
+    liStory.dataset.type = "story";
+    liStory.dataset.index = sIdx;
+    liStory.setAttribute("role","menuitem");
+    liStory.innerHTML = `
+      <span class="idx">[–]</span>
+      <span class="caret">▾</span>
+      <span class="title">${story.title}</span>
+      <span class="badge">${story.chapters.length} ch.</span>`;
     menu.appendChild(liStory);
-    story.chapters.forEach((ch,cIdx)=>{
-      const liCh=document.createElement("li");
-      liCh.className="item chapter"; liCh.dataset.type="chapter"; liCh.dataset.s=sIdx; liCh.dataset.c=cIdx;
-      liCh.style.display="flex";
-      liCh.innerHTML=`<span class="idx">[${cIdx+1}]</span><span class="title">${ch.title}</span>`;
+
+    // Chapter rows (hidden until toggled)
+    story.chapters.forEach((ch, cIdx) => {
+      const liCh = document.createElement("li");
+      liCh.className = "item chapter";
+      liCh.dataset.type = "chapter";
+      liCh.dataset.s = sIdx;
+      liCh.dataset.c = cIdx;
+      liCh.setAttribute("role","menuitem");
+      liCh.style.display = "none";
+      liCh.innerHTML = `
+        <span class="idx">[${cIdx+1}]</span>
+        <span class="title">${ch.title}</span>`;
       menu.appendChild(liCh);
     });
   });
 }
 buildMenu();
 
-function toggleStory(sIdx){
-  const rows=[...menu.querySelectorAll('.item.chapter')].filter(el=>+el.dataset.s===+sIdx);
-  const header=[...menu.querySelectorAll('.item.story')][sIdx];
-  const open=rows[0] && rows[0].style.display!=="none";
-  rows.forEach(el=>el.style.display=open?"none":"flex");
-  const caret=header?.querySelector(".caret"); if(caret) caret.textContent=open?"▶":"▾";
+/* -------- Toggle & Navigation -------- */
+function chaptersOfStory(sIdx){
+  return [...menu.querySelectorAll(".item.chapter")].filter(el => +el.dataset.s === +sIdx);
 }
-menu.addEventListener("click",(e)=>{
-  const li=e.target.closest(".item"); if(!li) return;
-  if(li.dataset.type==="story"){ toggleStory(li.dataset.index); setActiveFirstVisible(); }
-  else if(li.dataset.type==="chapter"){ openChapter(li); }
+
+function toggleStory(sIdx){
+  const rows = chaptersOfStory(sIdx);
+  const header = [...menu.querySelectorAll(".item.story")][sIdx];
+  const open = rows[0] && rows[0].style.display !== "none";
+  rows.forEach(el => el.style.display = open ? "none" : "flex");
+  const caret = header?.querySelector(".caret");
+  if (caret) caret.textContent = open ? "▶" : "▾";
+  // Set a visible item active if opening
+  if (!open) setActiveFirstVisible();
+}
+
+menu.addEventListener("click", (e) => {
+  const li = e.target.closest(".item");
+  if (!li) return;
+  if (li.dataset.type === "story")  toggleStory(li.dataset.index);
+  if (li.dataset.type === "chapter") openChapter(li);
 });
 
-function visibleChapters(){ return [...menu.querySelectorAll('.item.chapter')].filter(el=>el.style.display!=="none"); }
-let activeIdx=0;
+/* Keyboard navigation across visible chapters */
+function visibleChapters(){
+  return [...menu.querySelectorAll(".item.chapter")].filter(el => el.style.display !== "none");
+}
+let activeIdx = 0;
+
 function setActive(idx){
-  const vis=visibleChapters(); if(!vis.length) return;
-  activeIdx=(idx+vis.length)%vis.length; vis.forEach((el,i)=>el.classList.toggle("active",i===activeIdx));
-  const t=vis[activeIdx].querySelector(".title")?.textContent||""; statusEl.textContent="Selected: "+t;
+  const vis = visibleChapters();
+  if (!vis.length) return;
+  activeIdx = (idx + vis.length) % vis.length;
+  vis.forEach((el,i) => el.classList.toggle("active", i === activeIdx));
+  const t = vis[activeIdx].querySelector(".title")?.textContent || "";
+  statusEl.textContent = "Selected: " + t;
 }
 function setActiveFirstVisible(){ setActive(0); }
+
 function openChapter(el){
-  const s=+el.dataset.s,c=+el.dataset.c; const href=STORIES[s].chapters[c].href; if(href) location.href=href;
+  const s = +el.dataset.s, c = +el.dataset.c;
+  const href = STORIES[s].chapters[c].href;
+  if (href) location.href = href;
 }
-window.addEventListener("keydown",(e)=>{
-  const vis=visibleChapters();
-  if(e.key==="ArrowDown") setActive(activeIdx+1);
-  if(e.key==="ArrowUp") setActive(activeIdx-1);
-  if(e.key==="Enter" && vis.length) openChapter(vis[activeIdx]);
-  if(/^[1-9]$/.test(e.key)){ const n=(+e.key)-1; if(vis[n]){ setActive(n); openChapter(vis[n]); } }
+
+window.addEventListener("keydown", (e) => {
+  const vis = visibleChapters();
+  if (e.key === "ArrowDown") { setActive(activeIdx + 1); e.preventDefault(); }
+  if (e.key === "ArrowUp")   { setActive(activeIdx - 1); e.preventDefault(); }
+  if (e.key === "Enter" && vis.length) openChapter(vis[activeIdx]);
+  if (/^[1-9]$/.test(e.key)) {
+    const n = (+e.key) - 1;
+    if (vis[n]) { setActive(n); openChapter(vis[n]); }
+  }
 });
+
+/* Open the first story by default */
+toggleStory(0);
 setActiveFirstVisible();
 
-const t=document.getElementById('toggleMode');
-const pref=localStorage.getItem('readerMode')==='1';
-if(pref) document.body.classList.add('reader');
-t.textContent='READER MODE: '+(document.body.classList.contains('reader')?'ON':'OFF');
-t.addEventListener('click',()=>{
-  document.body.classList.toggle('reader');
-  const on=document.body.classList.contains('reader');
-  t.textContent='READER MODE: '+(on?'ON':'OFF');
-  localStorage.setItem('readerMode',on?'1':'0');
+/* -------- Reader Mode Toggle (tones down CRT for comfort) -------- */
+const t = document.getElementById("toggleMode");
+const pref = localStorage.getItem("readerMode") === "1";
+if (pref) document.body.classList.add("reader");
+t.textContent = "READER MODE: " + (document.body.classList.contains("reader") ? "ON" : "OFF");
+t.addEventListener("click", () => {
+  document.body.classList.toggle("reader");
+  const on = document.body.classList.contains("reader");
+  t.textContent = "READER MODE: " + (on ? "ON" : "OFF");
+  localStorage.setItem("readerMode", on ? "1" : "0");
 });
+
+/* -------- Optional: mount a display ad unit later --------
+   Once AdSense approves and you create a unit, you can paste the
+   <ins class="adsbygoogle">…</ins> block inside #adTop.
+   Example (replace SLOT_ID):
+   const ad = document.getElementById('adTop');
+   ad.innerHTML = '<ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-client="ca-pub-6783128125276286" data-ad-slot="SLOT_ID" data-ad-format="auto" data-full-width-responsive="true"></ins>';
+   (adsbygoogle = window.adsbygoogle || []).push({});
+---------------------------------------------------------- */
 </script>
 </body>
 </html>
