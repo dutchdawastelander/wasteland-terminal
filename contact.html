@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Contact — Vault-Tec Records</title>
+<meta name="description" content="Send a transmission to the Overseer. Contact the curator of Vault-Tec Records."/>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--ph:#7fff8a;--dim:#4db56b;--scan:rgba(0,0,0,.22)}
+html,body{background:#000;margin:0;color:var(--ph);font-family:"VT323",monospace}
+.wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
+.term{width:min(900px,95vw);min-height:70vh;position:relative;background:#020402;border-radius:22px;padding:28px;
+box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);transform:perspective(1200px) rotateX(2deg);}
+.term:before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.32}
+.term:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);background-size:6px 6px;mix-blend-mode:soft-light;opacity:.4;animation:crtFlicker 2.8s steps(2,end) infinite}
+.scanbar{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);opacity:.13;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3}
+h1{margin:0 0 12px;letter-spacing:.08em;font-size:32px;text-transform:uppercase;text-shadow:0 0 6px rgba(127,255,138,.45),0 0 18px rgba(127,255,138,.18);}
+p{line-height:1.6;font-size:21px;color:var(--dim);margin:12px 0;}
+a{color:#9abaff;text-decoration:none}
+a:hover{text-decoration:underline}
+fieldset{border:1px dashed rgba(127,255,138,.35);border-radius:12px;padding:14px;margin-top:10px}
+legend{color:var(--ph);padding:0 6px}
+.label{display:block;margin:8px 0 4px;color:var(--ph)}
+input,textarea{width:100%;background:#030a06;border:1px solid rgba(127,255,138,.25);color:var(--ph);border-radius:8px;padding:10px;font-family:inherit;font-size:18px}
+textarea{min-height:160px;resize:vertical}
+button{margin-top:10px;border:1px solid rgba(127,255,138,.55);background:#06140a;color:var(--ph);padding:10px 14px;border-radius:8px;font-family:inherit;font-size:18px;cursor:pointer}
+button:hover{background:#0b2a12}
+.note{font-size:18px;color:var(--dim)}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="term" role="form" aria-label="Contact the Overseer">
+    <div class="scanbar"></div>
+    <h1>TRANSMISSION: CONTACT</h1>
+
+    <p>To report corrupted files, missing chapters, or strange signals, send a transmission to the Overseer.</p>
+    <p class="note">Direct channel: <a href="mailto:dutch.gaming.and.whisky@gmail.com">dutch.gaming.and.whisky@gmail.com</a></p>
+
+    <!-- Static form that opens mail client (no server-side processing) -->
+    <form action="mailto:dutch.gaming.and.whisky@gmail.com" method="post" enctype="text/plain">
+      <fieldset>
+        <legend>Message Packet</legend>
+        <label class="label" for="name">Your Name</label>
+        <input id="name" name="name" type="text" placeholder="Wanderer, Courier, or Real Name"/>
+
+        <label class="label" for="email">Your Email</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com"/>
+
+        <label class="label" for="subject">Subject</label>
+        <input id="subject" name="subject" type="text" placeholder="Corrupted log / Feedback / Request"/>
+
+        <label class="label" for="message">Message</label>
+        <textarea id="message" name="message" placeholder="Type your transmission here..."></textarea>
+
+        <button type="submit">SEND TRANSMISSION</button>
+      </fieldset>
+    </form>
+
+    <p class="note">Prefer not to use a form? Email directly: <a href="mailto:dutch.gaming.and.whisky@gmail.com">dutch.gaming.and.whisky@gmail.com</a></p>
+  </div>
+</div>
+</body>
+</html>
