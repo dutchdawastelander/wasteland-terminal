@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>About — Vault-Tec Records</title>
+<meta name="description" content="Transmission from the Overseer: learn the origins and purpose of Vault-Tec Records, the last surviving archive of pre‑war memories and wasteland stories."/>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--ph:#7fff8a;--dim:#4db56b;--scan:rgba(0,0,0,.22)}
+html,body{background:#000;margin:0;color:var(--ph);font-family:"VT323",monospace}
+.wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
+.term{width:min(900px,95vw);min-height:80vh;position:relative;background:#020402;border-radius:22px;padding:28px;
+box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);transform:perspective(1200px) rotateX(2deg);}
+.term:before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.32}
+.term:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);background-size:6px 6px;mix-blend-mode:soft-light;opacity:.4;animation:crtFlicker 2.8s steps(2,end) infinite}
+.scanbar{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);opacity:.13;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3}
+h1{margin:0 0 12px;letter-spacing:.08em;font-size:32px;text-transform:uppercase;text-shadow:0 0 6px rgba(127,255,138,.45),0 0 18px rgba(127,255,138,.18);}
+p{line-height:1.6;font-size:21px;color:var(--dim);margin:12px 0;}
+hr{border:0;border-top:1px solid rgba(127,255,138,.3);margin:20px 0;}
+a{color:#9abaff;text-decoration:none}
+a:hover{text-decoration:underline}
+@keyframes roll{0%{top:-2px}100%{top:100%}}
+@keyframes crtFlicker{0%,100%{opacity:.58}50%{opacity:.64}}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="term" role="document" aria-label="Vault-Tec Records — About">
+    <div class="scanbar"></div>
+    <h1>TRANSMISSION: ABOUT VAULT-TEC RECORDS</h1>
+
+    <p><strong>Log Entry 0001 – Overseer’s Note</strong></p>
+    <p>
+      If you’re reading this, you’ve accessed a surviving terminal still connected to the Vault-Tec archive grid.
+      Most systems are offline. Only fragments remain: voice logs, diary excerpts, and scattered survivor accounts.
+      We’ve pieced together what we could before the reactors failed.
+    </p>
+
+    <p>
+      The purpose of <em>Vault-Tec Records</em> was simple—preserve stories of the old world and the new wasteland alike.
+      Every recovered entry represents a life once lived, a decision once made, or a warning meant for those who come next.
+    </p>
+
+    <p>
+      This terminal is maintained by the current Overseer, a lone archivist who continues to collect and restore data packets.
+      Sometimes new files appear overnight—perhaps ghosts in the system, perhaps voices still trying to be heard.
+    </p>
+
+    <hr/>
+
+    <p><strong>Access Information</strong></p>
+    <p>
+      Stories and recovered logs can be found in the <a href="/stories.html">Records Index</a>.
+      Each transmission is categorized by region and year, starting with
+      <a href="/no-home-in-the-waste-chapter-1-the-road-out-of-new-york.html">No Home in the Waste</a> and
+      <a href="/hf43-chapter-1-the-good-life-in-harper-s-ferry.html">Harper’s Ferry (HF43)</a>.
+    </p>
+
+    <p>
+      The Overseer welcomes reports of corrupted files, missing chapters, or strange signals.
+      Use the <a href="/contact.html">Contact</a> terminal to send a message.
+    </p>
+
+    <hr/>
+
+    <p><strong>Vault-Tec Legal Record 12-B</strong></p>
+    <p>
+      <em>Vault-Tec Records</em> is an independent fan archive inspired by the Fallout universe.
+      All references, names, and trademarks belong to Bethesda Softworks.
+      This site is a non-commercial storytelling project and is not affiliated with, endorsed by, or connected to Bethesda.
+    </p>
+
+    <p>
+      End of transmission.<br/>
+      <span style="color:var(--ph)">> SYSTEM STATUS: ONLINE · ARCHIVE STABLE · SIGNAL RANGE: 400KM</span>
+    </p>
+  </div>
+</div>
+</body>
+</html>
