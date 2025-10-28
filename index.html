@@ -51,6 +51,43 @@ padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: 
 }
 .intro a{ color:#9abaff; text-decoration:none }
 .intro a:hover{ text-decoration:underline }
+
+/* ===== Merch Terminal card ===== */
+.merch-box{display:flex;justify-content:center;margin:12px 0 16px}
+.merch-card{
+  width:100%;
+  border:1px dashed rgba(127,255,138,.35);
+  border-radius:12px;
+  background:#020402;
+  padding:14px 16px;
+  box-shadow:inset 0 0 42px rgba(0,0,0,.7);
+}
+.merch-title{
+  letter-spacing:.06em;
+  font-size:22px;
+  color:#7fff8a;
+  text-shadow:0 0 8px rgba(127,255,138,.35);
+  margin-bottom:6px;
+}
+.merch-copy{
+  color:#4db56b;
+  font-size:18px;
+  line-height:1.6;
+  margin:4px 0 10px;
+}
+.merch-btn{
+  display:inline-block;
+  padding:8px 14px;
+  border:1px solid rgba(127,255,138,.55);
+  border-radius:10px;
+  text-decoration:none;
+  color:#7fff8a;
+  background:#06140a;
+  font-size:18px;
+}
+.merch-btn:hover{ background:#0b2a12; }
+.merch-note{ margin-top:6px; font-size:14px; color:#4db56b; opacity:.9; }
+
 @keyframes roll{0%{top:-2px}100%{top:100%}}
 @keyframes crtFlicker{0%,100%{opacity:.58}50%{opacity:.64}}
 @keyframes blink{50%{opacity:0}}
@@ -65,7 +102,7 @@ padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: 
     <div class="sub">USER: Overseer • Click story to expand • ENTER opens a chapter • 1–9 quick select</div>
     <div class="rule"></div>
 
-    <!-- Crawlable intro: flows under subheader -->
+    <!-- Crawlable intro -->
     <div class="intro">
       <strong>Vault-Tec Records</strong> is a Fallout-inspired archive of survivor logs and short stories.
       Jump in via the menu below, or start with
@@ -73,6 +110,19 @@ padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: 
       For info and policies, see <a href="/about.html">About</a> and <a href="/privacy.html">Privacy</a>.
       <!-- No ads are served on this page by design. -->
     </div>
+
+    <!-- === Merch Terminal === -->
+    <section class="merch-box" aria-label="Merch Terminal">
+      <div class="merch-card">
+        <div class="merch-title">MERCH TERMINAL</div>
+        <p class="merch-copy">
+          Support the archive and look good doing it. New drops powered by Printful:
+          tees, mugs, and more — all in the Vault-Tec Records style.
+        </p>
+        <a class="merch-btn" href="https://vaulttecrecords.printful.com" target="_blank" rel="noopener">OPEN STORE</a>
+        <div class="merch-note">Fulfilled &amp; shipped by Printful</div>
+      </div>
+    </section>
 
     <ul id="menu" class="menu" role="menu" aria-label="Stories & Chapters"></ul>
     <div class="status" aria-live="polite">
