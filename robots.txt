@@ -1,0 +1,14 @@
+# robots.txt for vaulttecrecords.com
+# Author: Vault-Tec Records
+# Updated: October 2025
+
+User-agent: *
+Allow: /
+
+# Optional: block unfinished or private folders
+Disallow: /drafts/
+Disallow: /test/
+Disallow: /tmp/
+
+# Sitemap reference
+Sitemap: https://vaulttecrecords.com/sitemap.xml
