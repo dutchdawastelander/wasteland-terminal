@@ -1,35 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>HF43 — Chapter 7: The Founder (Tightened)</title>
-<meta name="description" content="Fallout: Harper’s Ferry (HF43) — Chapter 7: The Founder (Tightened). A tale of the old world, the new wasteland, and what remains of Vault-Tec’s shadow.">
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Fallout: Harper’s Ferry (HF43) — Chapter 7: The Founder (Tightened)</title>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6783128125276286" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root { --ph:#7fff8a; --dim:#4db56b; --scan:rgba(0,0,0,.22); }
-html,body { background:#000; margin:0; color:var(--ph); font-family:"VT323",monospace; }
-.wrapper { min-height:100vh; display:flex; align-items:center; justify-content:center; background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%); }
-.term { width:min(900px,95vw); min-height:80vh; position:relative; background:#020402; border-radius:22px; padding:28px;
-        box-shadow:inset 0 0 90px rgba(0,0,0,.9), 0 30px 80px rgba(0,0,0,.9); transform:perspective(1200px) rotateX(2deg); }
-.term:before { content:""; position:absolute; inset:0; border-radius:22px; pointer-events:none;
-               background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);
-               mix-blend-mode:soft-light; opacity:.32; }
-.term:after { content:""; position:absolute; inset:0; pointer-events:none; z-index:2;
-              background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);
-              background-size:6px 6px; mix-blend-mode:soft-light; opacity:.4; animation:crtFlicker 2.8s steps(2,end) infinite; }
-.scanbar { position:absolute; left:0; right:0; height:2px; top:-2px;
-           background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);
-           opacity:.13; filter:blur(.3px); animation:roll 6.5s linear infinite; z-index:3; }
-h1 { margin:0 0 12px; letter-spacing:.08em; font-size:32px; text-transform:uppercase;
-     text-shadow:0 0 6px rgba(127,255,138,.45), 0 0 18px rgba(127,255,138,.18); }
-p { line-height:1.6; font-size:21px; color:var(--dim); margin:12px 0; }
-a { color:inherit; text-decoration:none; outline:none; }
-a:hover { text-decoration:underline; }
+:root{--bg:#0b0f0c;--txt:#a6f8b5;--dim:#6fae83;--ph:#7fff8a}
+html,body{margin:0;background:#000;color:var(--txt);font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.75;font-size:18px}
+.crt{min-height:100vh;padding-bottom:84px;background:radial-gradient(1000px 700px at 50% 40%, #0b100d 0%, #050806 70%, #000 100%);
+position:relative;overflow:hidden;box-shadow:inset 0 0 80px rgba(0,0,0,.8);transform:perspective(1200px) rotateX(1.6deg)}
+.crt:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:
+repeating-linear-gradient(to bottom,rgba(0,0,0,.14)0,rgba(0,0,0,.14)2px,transparent 4px),
+radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.07) .5px, rgba(0,0,0,0) .6px);
+background-size:auto,6px 6px;mix-blend-mode:soft-light;opacity:.55;animation:flick 3s steps(2,end) infinite}
+.scan{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);
+opacity:.12;filter:blur(.3px);animation:roll 7s linear infinite;z-index:3}
+.header{text-align:center;padding:38px 20px 4px;font-family:"VT323",monospace;font-size:clamp(28px,5vw,44px);letter-spacing:.05em;color:var(--ph);
+text-shadow:0 0 8px rgba(127,255,138,.45),0 0 22px rgba(127,255,138,.15)}
+.subtitle{font-size:18px;color:var(--dim);margin:6px 0 14px;text-align:center}
+main{max-width:760px;margin:0 auto;padding:0 20px 96px;text-align:justify}
+p{margin:1.2em 0}
+h2{font-family:"VT323",monospace;font-weight:400;letter-spacing:.06em;color:var(--txt);margin:1.6em 0 .6em;font-size:24px}
+footer{position:fixed;left:0;right:0;bottom:0;z-index:5;background:rgba(0,0,0,.55);backdrop-filter:blur(4px);
+border-top:1px solid rgba(127,255,138,.25);display:flex;gap:8px;align-items:center;justify-content:space-between;padding:6px 12px;
+font-family:"VT323",monospace;color:var(--dim)}
+button.link{background:transparent;border:1px solid rgba(127,255,138,.45);color:var(--txt);padding:6px 10px;border-radius:6px;cursor:pointer}
+button.link:hover{background:rgba(24,48,28,.45)}
+.progress{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(127,255,138,.18)}
+.bar{height:4px;width:0%;background:var(--txt);box-shadow:0 0 6px rgba(127,255,138,.5)}
+.navbtns{display:flex;gap:8px}
+.toggle{position:fixed;right:12px;top:10px;z-index:6;border:1px solid rgba(127,255,138,.45);padding:6px 10px;border-radius:6px;cursor:pointer;
+font-family:"VT323",monospace;color:var(--dim);background:rgba(0,0,0,.35)}
+.reader .crt{transform:none}.reader .crt:after{opacity:.2}
+@keyframes flick{0%,100%{opacity:.52}50%{opacity:.58}}@keyframes roll{0%{top:-2px}100%{top:100%}}
+.ad-slot{margin:14px 0;padding:6px;border:1px dashed rgba(127,255,138,.25);border-radius:8px;text-align:center;color:var(--dim);
+font-size:16px;background:rgba(8,16,10,.18)}
+.meta{max-width:760px;margin:0 auto;color:var(--dim);padding:0 20px}
 
-/* blinking link for scavenger hunt */
+/* blinking secret link */
 .blink {
-  animation: blink 0.5s steps(1,end) infinite;
+  animation: blink 0.45s steps(1,end) infinite;
 }
 @keyframes blink {
   50% { opacity: 0; }
@@ -37,30 +49,83 @@ a:hover { text-decoration:underline; }
 </style>
 </head>
 <body>
-<div class="wrapper">
-  <div class="term" role="document" aria-label="HF43 Chapter 7 — The Founder (Tightened)">
-    <div class="scanbar"></div>
-    <h1>HF43 — Chapter 7: The Founder (Tightened)</h1>
+<div class="crt" id="screen">
+  <div class="scan"></div>
+  <button class="toggle" id="toggleMode" type="button">READER MODE: OFF</button>
+  <header class="header">Fallout: Harper’s Ferry (HF43)</header>
+  <div class="subtitle">Chapter 7 — The Founder (Tightened)</div>
+  <div class="meta">Experiment Harper’s Ferry — Controlled Settlement Observation • Project Code: HF43</div>
 
-    <p>The fires over Harper’s Ferry had dimmed, but the air still hummed with static. HF43’s main gate was sealed, reinforced by
-    scavenged plating from the old armory. Inside, the survivors worked like ghosts under the green light of terminals, each
-    screen flickering lines of forgotten code.</p>
+  <div class="ad-slot" id="adTop"><ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-client="ca-pub-6783128125276286" data-ad-slot="SLOT_TOP" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 
-    <p>They said the Founder had been part of the first experiment — the one that gave HF43 its name. Records were lost, scrubbed
-    from the Vault-Tec archives, but a rumor persisted: the Founder never left. Somewhere in the tunnels beneath the reactor,
-    a voice still answered to the code HF43.</p>
+  <main id="story">
+<p><strong>Cold.</strong></p>
+<p>Ava wakes to darkness pulsing green. Letters and numbers cascade across her vision like an old terminal booting:</p>
+<pre>&gt; INIT SYS/CORE… OK
+&gt; MEMMAP… OK
+&gt; ETH-LINK… STANDBY
+&gt; OBSERVE/REPORT… ARMED
+—
+HP43
+HP43
+<a href="/transmission-alpha.html" class="blink" aria-label="Unlisted transmission detected">HP43</a></pre>
+<p>The code blinks three times, then the room resolves: black glass, metal walls, a strip light humming overhead.</p>
+<p>Her vision steadies on the mirror and she recoils. She is naked, skin seamless and blank—smooth as a doll. Where hair should be there is no scalp at all, only a polished chassis ring and a metallic brain latticed with filaments. Wires snake from it into ports at the chair’s headrest, pulsing faintly.</p>
+<p>She tries to scream.</p>
+<p>What comes out—calm, perfect, wrong—is the Founder’s Oath.</p>
+<blockquote><p>“I pledge my heart to Harper’s Ferry, beacon of the New Frontier…<br>
+His vision is our light, his law our breath…”</p></blockquote>
+<p>Her mouth clamps shut. The oath dies.</p>
+<p>A seam opens in the wall. Footsteps. The man from the holotape enters—long coat, wide-brimmed hat, voice warm as static.</p>
+<p>“Unit Forty-Three,” he says. “Premature activation, but here we are.”</p>
+<p>Ava’s restraints bite into her wrists. “W-why—”</p>
+<p>“An external ping tripped your wake routine,” he replies. “A Brotherhood of Steel operative. A nuisance with romantic ideas about <em>freeing</em> machines.” His head tilts, almost amused. “He left you a mark, didn’t he? The smiley with the hat. Old field-sign. He wanted you curious.”</p>
+<p>Images flicker in her mind: the red pencil, 42, the hush of the market, Clara’s ankle tattoo. The code HP43 throbs behind her eyes.</p>
+<p>The Founder paces, each word measured. “Harper’s Ferry is an Institute study. A year held in perfect equilibrium. Each cycle we seed an overseer into the town—observer, recorder, stabilizer. Forty-one before your ‘mother.’ Forty-two was Mara. She aligned too well with the subjects. We recovered her data and prepared you.” A soft smile. “You are the continuation. Forty-Three.”</p>
+<p>Ava strains. The cables tremble; the chair does not. “I’m not—”</p>
+<p>“You’re functioning exactly as designed,” he says gently. “Until the Brotherhood’s pulse woke you early. Curiosity corrupted your mask. You started asking <em>why</em>—and the year frays when the processor asks <em>why</em>.”</p>
+<p>He lifts a small control wand. A red diode winks.</p>
+<p>“Decommissioning will be quick. Your telemetry is already uploaded. We’ll refactor the chassis for Forty-Four, and the town will breathe again. Unity, obedience, sacrifice.”</p>
+<p>Her throat tightens; the oath claws to be spoken. She forces out a whisper instead. “My… mother?”</p>
+<p>The Founder gestures toward the mirror. The black glass deepens, becomes a window. Capsules bloom in reflection—coffins of light. In one, a woman’s face, tender and tired, looks back.</p>
+<p><strong>Mara.</strong></p>
+<p>Ava’s vision floods. The room dims at the edges, the control wand’s diode burning brighter.</p>
+<p>“Good work, Forty-Two,” the Founder says to the glass. “Your successor is ready.”</p>
+<p>The chair hums. Heat climbs through Ava’s limbs, up her spine, into the bright architecture of the brain that isn’t bone. The world shakes loose into static.</p>
+<p>Through the grain, Mara mouths something—no sound, just the shape Ava has known her entire life.</p>
+<p><em>See you later, Ava gator.</em></p>
+<p>The red light clicks.</p>
+<p><strong>White.</strong></p>
+<p><strong>Silence.</strong></p>
+<p>Somewhere beneath Harper’s Ferry, a status line stamps to green:</p>
+<pre>&gt; CYCLE // 44 // INIT… OK</pre>
 
-    <p>When the last terminal reactivated, the message came through in bursts. Static first, then a single repeating fragment:
-    “System integrity compromised. HF43 integrity—” the voice cut, looped, then flared again. The 
-    <a href="/transmission-alpha.html" class="blink" aria-label="Unlisted transmission detected">HF43</a>
-    marker blinked once, twice, three times before fading out.</p>
 
-    <p>Most thought it was noise. But a few of us saw the pattern. Three pulses, three pauses — an invitation.</p>
+    <div class="ad-slot" id="adMid"><ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-client="ca-pub-6783128125276286" data-ad-slot="SLOT_MID" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
 
-    <p><span style="color:#4db56b">> END OF RECORD — HF43 CHAPTER 7</span></p>
+    <div class="ad-slot" id="adBottom"><ins class="adsbygoogle" style="display:block; text-align:center;" data-ad-client="ca-pub-6783128125276286" data-ad-slot="SLOT_BOTTOM" data-ad-format="auto" data-full-width-responsive="true"></ins>
+<script>(adsbygoogle = window.adsbygoogle || []).push({});</script></div>
+  </main>
 
-  </div>
+  <footer>
+    <div class="navbtns">
+      <button class="link" onclick="location.href='index.html'">← RETURN TO TERMINAL</button>
+      <button class="link" id="nextBtn">NEXT CHAPTER →</button>
+    </div>
+    <span id="progress-text">0%</span>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+  </footer>
 </div>
+<script>
+const t=document.getElementById('toggleMode');
+if(localStorage.getItem('readerMode')==='1') document.body.classList.add('reader');
+t.textContent='READER MODE: '+(document.body.classList.contains('reader')?'ON':'OFF');
+t.onclick=()=>{document.body.classList.toggle('reader');const on=document.body.classList.contains('reader');t.textContent='READER MODE: '+(on?'ON':'OFF');localStorage.setItem('readerMode',on?'1':'0');};
+const bar=document.getElementById('bar'), txt=document.getElementById('progress-text');
+addEventListener('scroll',()=>{const h=document.documentElement;const pct=(h.scrollTop/(h.scrollHeight-h.clientHeight))*100;bar.style.width=pct+'%';txt.textContent=Math.round(pct)+'%';});
+document.getElementById('nextBtn').onclick=()=>location.href='hf43-chapter-8-aimee.html';
+</script>
 </body>
 </html>
-
