@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Congratulations — Claim Your Prize</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--ph:#7fff8a;--dim:#4db56b;--scan:rgba(0,0,0,.22)}
+html,body{background:#000;margin:0;color:var(--ph);font-family:"VT323",monospace}
+.wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
+.term{width:min(900px,95vw);min-height:70vh;position:relative;background:#020402;border-radius:22px;padding:28px;
+box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);transform:perspective(1200px) rotateX(2deg);}
+.term:before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.32}
+.term:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);background-size:6px 6px;mix-blend-mode:soft-light;opacity:.4;animation:crtFlicker 2.8s steps(2,end) infinite}
+.scanbar{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);opacity:.13;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3}
+h1{margin:0 0 12px;letter-spacing:.08em;font-size:32px;text-transform:uppercase;text-shadow:0 0 6px rgba(127,255,138,.45),0 0 18px rgba(127,255,138,.18);}
+p, label, input, button{font-size:21px;color:var(--dim)}
+a{color:#9abaff;text-decoration:none}
+a:hover{text-decoration:underline}
+input[type=text],input[type=email]{width:100%;background:#030a06;border:1px solid rgba(127,255,138,.25);color:var(--ph);border-radius:8px;padding:10px;font-family:inherit}
+button{margin-top:10px;border:1px solid rgba(127,255,138,.55);background:#06140a;color:var(--ph);padding:10px 14px;border-radius:8px;font-family:inherit;cursor:pointer}
+button:hover{background:#0b2a12}
+.note{color:var(--dim);font-size:18px}
+.center{display:flex;flex-direction:column;gap:10px}
+fieldset{border:1px dashed rgba(127,255,138,.35);border-radius:12px;padding:14px;margin-top:10px}
+legend{color:var(--ph);padding:0 6px}
+.small{font-size:16px}
+.success{color:#7fff8a}
+.error{color:#ff8a8a}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="term" role="form" aria-label="Claim Prize">
+    <div class="scanbar"></div>
+    <h1>CONGRATULATIONS, WANDERER</h1>
+    <p>You completed the Vault-Tec scavenger hunt. Fill out the form below to claim your prize:</p>
+    <p class="note">Prize: TUBBZ Mini Vault Boy Duck</p>
+
+    <form id="claimForm" novalidate>
+      <fieldset>
+        <legend>Shipment Details</legend>
+
+        <label for="name">Full Name *</label>
+        <input id="name" name="name" type="text" placeholder="Your name" autocomplete="name" required/>
+
+        <label for="email">Email *</label>
+        <input id="email" name="email" type="email" placeholder="you@example.com" autocomplete="email" required/>
+
+        <label for="addr1">Address Line 1 *</label>
+        <input id="addr1" name="address_line_1" type="text" placeholder="Street address" autocomplete="address-line1" required/>
+
+        <label for="addr2">Address Line 2</label>
+        <input id="addr2" name="address_line_2" type="text" placeholder="Apt/Suite (optional)" autocomplete="address-line2"/>
+
+        <label for="city">City *</label>
+        <input id="city" name="city" type="text" autocomplete="address-level2" required/>
+
+        <label for="state">State/Province *</label>
+        <input id="state" name="state" type="text" autocomplete="address-level1" required/>
+
+        <label for="zip">Postal Code *</label>
+        <input id="zip" name="postal_code" type="text" autocomplete="postal-code" required/>
+
+        <label for="notes">Notes (optional)</label>
+        <input id="notes" name="notes" type="text" placeholder="Anything we should know?"/>
+
+        <input type="text" id="hp" name="company" style="position:absolute;left:-5000px;top:auto;width:1px;height:1px;overflow:hidden" tabindex="-1" autocomplete="off" aria-hidden="true"/>
+
+        <button type="submit">SUBMIT CLAIM</button>
+        <p id="msg" class="note" role="status" aria-live="polite"></p>
+        <p class="small">Having trouble? Email your details to <a href="mailto:dutch.gaming.and.whisky@gmail.com">dutch.gaming.and.whisky@gmail.com</a>.</p>
+        <p class="small">Privacy: Address is used only to ship the prize; we don’t store it on the site.</p>
+      </fieldset>
+    </form>
+  </div>
+</div>
+<script>
+(function(){
+  const form = document.getElementById('claimForm');
+  const msg  = document.getElementById('msg');
+  const to   = 'dutch.gaming.and.whisky@gmail.com';
+  function esc(s){ return encodeURIComponent(String(s||'')); }
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    msg.textContent='';
+    const requiredIds = ['name','email','addr1','city','state','zip'];
+    for(const id of requiredIds){
+      const el = document.getElementById(id);
+      if(!el.value.trim()){
+        msg.textContent = 'Please fill out all required fields (*).';
+        msg.className = 'note error';
+        el.focus();
+        return;
+      }
+    }
+    if(document.getElementById('hp').value.trim()){
+      msg.textContent = 'Submission blocked.';
+      msg.className = 'note error';
+      return;
+    }
+    const name  = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const addr1 = document.getElementById('addr1').value.trim();
+    const addr2 = document.getElementById('addr2').value.trim();
+    const city  = document.getElementById('city').value.trim();
+    const state = document.getElementById('state').value.trim();
+    const zip   = document.getElementById('zip').value.trim();
+    const notes = document.getElementById('notes').value.trim();
+    const subject = esc('Vault-Tec Prize Claim — '+name);
+    const bodyLines = [
+      'Vault-Tec Records — Prize Claim',
+      '',
+      'Name: ' + name,
+      'Email: ' + email,
+      'Address Line 1: ' + addr1,
+      'Address Line 2: ' + (addr2 || '(none)'),
+      'City: ' + city,
+      'State/Province: ' + state,
+      'Postal Code: ' + zip,
+      'Notes: ' + (notes || '(none)'),
+      '',
+      'User agent: ' + navigator.userAgent
+    ];
+    const body = esc(bodyLines.join('\n'));
+    const href = 'mailto:'+to+'?subject='+subject+'&body='+body;
+    window.location.href = href;
+    msg.textContent = 'Opening your email client… if it didn\'t open, use the direct link above.';
+    msg.className = 'note success';
+  });
+})();
+</script>
+</body>
+</html>
