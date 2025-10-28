@@ -1,111 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Main Pages -->
   <url>
     <loc>https://vaulttecrecords.com/</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>https://vaulttecrecords.com/about.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/contact.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/privacy.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/stories.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://vaulttecrecords.com/contact.html</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Story Pages -->
+  <url>
     <loc>https://vaulttecrecords.com/no-home-in-the-waste-chapter-1-the-road-out-of-new-york.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/no-home-in-the-waste-chapter-2-the-cabin.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/no-home-in-the-waste-chapter-3-the-memorial.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/no-home-in-the-waste-chapter-4-the-green-sky.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/no-home-in-the-waste-chapter-5-the-change.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/hf43-chapter-1-the-good-life-in-harper-s-ferry.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/hf43-chapter-2-erased.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/hf43-chapter-3-the-forgotten-tunnels.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/hf43-chapter-4-forty-two.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/hf43-chapter-5-the-founder.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://vaulttecrecords.com/hf43-chapter-6-year-one.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
+    <priority>0.9</priority>
   </url>
   <url>
     <loc>https://vaulttecrecords.com/hf43-chapter-7-the-founder-tightened.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Scavenger Hunt / Hidden Pages -->
+  <url>
+    <loc>https://vaulttecrecords.com/transmission-alpha.html</loc>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://vaulttecrecords.com/hf43-chapter-8-aimee.html</loc>
-    <lastmod>2025-10-28</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://vaulttecrecords.com/photo-terminal.html</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://vaulttecrecords.com/claim-vault-boy.html</loc>
     <priority>0.6</priority>
   </url>
 </urlset>
