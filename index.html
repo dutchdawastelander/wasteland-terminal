@@ -38,6 +38,8 @@
     .cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
     .toggle{position:absolute;top:10px;right:14px;border:1px solid rgba(127,255,138,.45);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:18px;z-index:5}
     .toggle:hover{background:rgba(24,48,28,.4)}
+    .status a{ color:var(--ph); text-decoration:none; }
+    .status a:hover{ text-decoration:underline; }
 
     /* crawlable intro */
     .intro{
@@ -110,7 +112,6 @@
         Jump in via the menu below, or start with
         <a href="/no-home-in-the-waste-chapter-1-the-road-out-of-new-york.html">No Home in the Waste — Chapter 1</a>.
         For info and policies, see <a href="/about.html">About</a> and <a href="/privacy.html">Privacy</a>.
-        <!-- No ads are served on this page by design. -->
       </div>
 
       <!-- === Merch Terminal === -->
@@ -130,7 +131,11 @@
 
       <div class="status" aria-live="polite">
         <div class="left">INPUT: <span id="status">Use ↑/↓ to navigate chapters. ENTER to open.</span></div>
-        <div class="right">READY<span class="cursor">▌</span></div>
+        <div class="right">
+          READY<span class="cursor">▌</span>
+          &nbsp;|&nbsp;
+          <a href="https://vaulttecrecords.printful.me/" target="_blank" rel="noopener">MERCH</a>
+        </div>
       </div>
     </div>
   </div>
@@ -155,6 +160,7 @@
         {title:"Chapter 8 — Aimee",href:"hf43-chapter-8-aimee.html"}
       ]}
     ];
+
     const menu=document.getElementById("menu"),statusEl=document.getElementById("status");
 
     function buildMenu(){
@@ -172,9 +178,11 @@
         });
       });
     }
+
     buildMenu();
 
     function chaptersOfStory(sIdx){ return [...menu.querySelectorAll('.item.chapter')].filter(el=>+el.dataset.s===+sIdx); }
+
     function toggleStory(sIdx){
       const rows=chaptersOfStory(sIdx); const header=[...menu.querySelectorAll('.item.story')][sIdx];
       const open=rows[0] && rows[0].style.display!=="none";
@@ -196,7 +204,9 @@
       activeIdx=(idx+vis.length)%vis.length; vis.forEach((el,i)=>el.classList.toggle("active",i===activeIdx));
       const t=vis[activeIdx].querySelector(".title")?.textContent||""; statusEl.textContent="Selected: "+t;
     }
+
     function setActiveFirstVisible(){ setActive(0); }
+
     function openChapter(el){
       const s=+el.dataset.s,c=+el.dataset.c; const href=STORIES[s].chapters[c].href; if(href) location.href=href;
     }
@@ -204,15 +214,13 @@
     window.addEventListener("keydown",(e)=>{
       const vis=visibleChapters();
       if(e.key==="ArrowDown"){ setActive(activeIdx+1); e.preventDefault(); }
-      if(e.key==="ArrowUp")  { setActive(activeIdx-1); e.preventDefault(); }
+      if(e.key==="ArrowUp"){ setActive(activeIdx-1); e.preventDefault(); }
       if(e.key==="Enter" && vis.length) openChapter(vis[activeIdx]);
       if(/^[1-9]$/.test(e.key)){ const n=(+e.key)-1; if(vis[n]){ setActive(n); openChapter(vis[n]); } }
     });
 
-    // Expand first story by default
     toggleStory(0); setActiveFirstVisible();
 
-    // Reader mode toggle (if you want to reuse later)
     const t=document.getElementById('toggleMode');
     if(localStorage.getItem('readerMode')==='1') document.body.classList.add('reader');
     t.textContent='READER MODE: '+(document.body.classList.contains('reader')?'ON':'OFF');
@@ -220,3 +228,4 @@
   </script>
 </body>
 </html>
+
