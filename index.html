@@ -34,9 +34,19 @@ padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: 
 .cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
 .toggle{position:absolute;top:10px;right:14px;border:1px solid rgba(127,255,138,.45);padding:6px 10px;border-radius:6px;cursor:pointer;font-size:18px;z-index:5}
 .toggle:hover{background:rgba(24,48,28,.4)}
-.intro{position:absolute;left:16px;right:16px;top:64px;z-index:4;color:var(--dim);font-size:20px;line-height:1.35;background:rgba(6,12,8,.35);border:1px solid rgba(127,255,138,.18);border-radius:10px;padding:10px 12px}
-.intro a{color:#9abaff;text-decoration:none}
-.intro a:hover{text-decoration:underline}
+.intro{
+  position: static;
+  margin: 8px 0 12px;
+  color: var(--dim);
+  font-size: 20px;
+  line-height: 1.35;
+  background: rgba(6,12,8,.35);
+  border: 1px solid rgba(127,255,138,.18);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.intro a{ color:#9abaff; text-decoration:none }
+.intro a:hover{ text-decoration:underline }
 @keyframes roll{0%{top:-2px}100%{top:100%}}
 @keyframes crtFlicker{0%,100%{opacity:.58}50%{opacity:.64}}
 @keyframes blink{50%{opacity:0}}
@@ -46,8 +56,12 @@ padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: 
 <div class="wrapper">
   <div class="term" role="application" aria-label="Vault-Tec Terminal">
     <div class="scanbar"></div>
+    <button class="toggle" id="toggleMode" type="button">READER MODE: OFF</button>
+    <div class="hdr">VAULT-TEC RECORDS — TERMINAL ACCESS</div>
+    <div class="sub">USER: Overseer • Click story to expand • ENTER opens a chapter • 1–9 quick select</div>
+    <div class="rule"></div>
 
-    <!-- Small crawlable intro (helps AdSense/SEO; subtle for users) -->
+    <!-- Crawlable intro: now flows naturally under subheader -->
     <div class="intro">
       <strong>Vault-Tec Records</strong> is a Fallout-inspired archive of survivor logs and short stories.
       Jump in via the menu below, or start with
@@ -56,10 +70,6 @@ padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: 
       <!-- No ads are served on this page by design. -->
     </div>
 
-    <button class="toggle" id="toggleMode" type="button">READER MODE: OFF</button>
-    <div class="hdr">VAULT-TEC RECORDS — TERMINAL ACCESS</div>
-    <div class="sub">USER: Overseer • Click story to expand • ENTER opens a chapter • 1–9 quick select</div>
-    <div class="rule"></div>
     <ul id="menu" class="menu" role="menu" aria-label="Stories & Chapters"></ul>
     <div class="status" aria-live="polite">
       <div>INPUT: <span id="status">Use ↑/↓ to navigate chapters. ENTER to open.</span></div>
@@ -70,20 +80,20 @@ padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: 
 <script>
 const STORIES=[
   {title:"No Home in the Waste",chapters:[
-    {title:"Chapter 1 — The Road Out of New York",href:"no-home-in-the-waste-chapter-1-the-road-out-of-new-york.html"}, 
-    {title:"Chapter 2 — The Cabin",href:"no-home-in-the-waste-chapter-2-the-cabin.html"}, 
-    {title:"Chapter 3 — The Memorial",href:"no-home-in-the-waste-chapter-3-the-memorial.html"}, 
-    {title:"Chapter 4 — The Green Sky",href:"no-home-in-the-waste-chapter-4-the-green-sky.html"}, 
+    {title:"Chapter 1 — The Road Out of New York",href:"no-home-in-the-waste-chapter-1-the-road-out-of-new-york.html"},
+    {title:"Chapter 2 — The Cabin",href:"no-home-in-the-waste-chapter-2-the-cabin.html"},
+    {title:"Chapter 3 — The Memorial",href:"no-home-in-the-waste-chapter-3-the-memorial.html"},
+    {title:"Chapter 4 — The Green Sky",href:"no-home-in-the-waste-chapter-4-the-green-sky.html"},
     {title:"Chapter 5 — The Change",href:"no-home-in-the-waste-chapter-5-the-change.html"}
   ]},
   {title:"Fallout: Harper’s Ferry (HF43)",chapters:[
-    {title:"Chapter 1 — The Good Life in Harper’s Ferry",href:"hf43-chapter-1-the-good-life-in-harper-s-ferry.html"}, 
-    {title:"Chapter 2 — Erased",href:"hf43-chapter-2-erased.html"}, 
-    {title:"Chapter 3 — The Forgotten Tunnels",href:"hf43-chapter-3-the-forgotten-tunnels.html"}, 
-    {title:"Chapter 4 — Forty-Two",href:"hf43-chapter-4-forty-two.html"}, 
-    {title:"Chapter 5 — The Founder",href:"hf43-chapter-5-the-founder.html"}, 
-    {title:"Chapter 6 — Year One",href:"hf43-chapter-6-year-one.html"}, 
-    {title:"Chapter 7 — The Founder (Tightened)",href:"hf43-chapter-7-the-founder-tightened.html"}, 
+    {title:"Chapter 1 — The Good Life in Harper’s Ferry",href:"hf43-chapter-1-the-good-life-in-harper-s-ferry.html"},
+    {title:"Chapter 2 — Erased",href:"hf43-chapter-2-erased.html"},
+    {title:"Chapter 3 — The Forgotten Tunnels",href:"hf43-chapter-3-the-forgotten-tunnels.html"},
+    {title:"Chapter 4 — Forty-Two",href:"hf43-chapter-4-forty-two.html"},
+    {title:"Chapter 5 — The Founder",href:"hf43-chapter-5-the-founder.html"},
+    {title:"Chapter 6 — Year One",href:"hf43-chapter-6-year-one.html"},
+    {title:"Chapter 7 — The Founder (Tightened)",href:"hf43-chapter-7-the-founder-tightened.html"},
     {title:"Chapter 8 — Aimee",href:"hf43-chapter-8-aimee.html"}
   ]}
 ];
