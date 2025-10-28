@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Terminal Image — Verification</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{--ph:#7fff8a;--dim:#4db56b;--scan:rgba(0,0,0,.22)}
+html,body{background:#000;margin:0;color:var(--ph);font-family:"VT323",monospace}
+.wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
+.term{width:min(900px,95vw);min-height:70vh;position:relative;background:#020402;border-radius:22px;padding:28px;
+box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);transform:perspective(1200px) rotateX(2deg);}
+.term:before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.32}
+.term:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);background-size:6px 6px;mix-blend-mode:soft-light;opacity:.4;animation:crtFlicker 2.8s steps(2,end) infinite}
+.scanbar{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);opacity:.13;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3}
+h1{margin:0 0 12px;letter-spacing:.08em;font-size:32px;text-transform:uppercase;text-shadow:0 0 6px rgba(127,255,138,.45),0 0 18px rgba(127,255,138,.18);}
+p, label, input, button{font-size:21px;color:var(--dim)}
+a{color:#9abaff;text-decoration:none}
+a:hover{text-decoration:underline}
+input[type=text]{width:100%;background:#030a06;border:1px solid rgba(127,255,138,.25);color:var(--ph);border-radius:8px;padding:10px;font-family:inherit}
+button{margin-top:10px;border:1px solid rgba(127,255,138,.55);background:#06140a;color:var(--ph);padding:10px 14px;border-radius:8px;font-family:inherit;cursor:pointer}
+button:hover{background:#0b2a12}
+.note{color:var(--dim);font-size:18px}
+.center{display:flex;flex-direction:column;gap:10px}
+
+img{max-width:100%;height:auto;border:1px solid rgba(127,255,138,.25);border-radius:10px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="term" role="document" aria-label="Photo Challenge">
+    <div class="scanbar"></div>
+    <h1>VISUAL VERIFICATION</h1>
+    <p>Locate the hidden detail in the image below. Then enter the correct code to proceed.</p>
+    <p class="note">Tip: On some devices, zoom helps. The code is a three-digit number.</p>
+    <img src="/images/terminal-photo.jpg" alt="Security photo of a Vault-Tec terminal with artifacts"/>
+    <div class="center">
+      <label for="code">Enter the three-digit code:</label>
+      <input id="code" type="text" placeholder="e.g., 101"/>
+      <button onclick="unlock()">VERIFY</button>
+      <p id="msg" class="note"></p>
+    </div>
+  </div>
+</div>
+<script>
+const CORRECT = '111'; // TODO: replace with the real code hidden in your image
+function unlock(){
+  const v = (document.getElementById('code').value||'').trim();
+  if(v === CORRECT) {
+    window.location.href = '/claim-vault-boy.html';
+  } else {
+    document.getElementById('msg').textContent = 'Incorrect code. Keep scanning the photo.';
+  }
+}
+</script>
+</body>
+</html>
