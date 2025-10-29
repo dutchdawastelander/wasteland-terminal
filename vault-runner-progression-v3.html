@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Vault Runner — Progression Mode (v3, animated)</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<meta name="description" content="Runner with levels, story, and animated pixel hero (vault‑style).">
+<style>
+  :root{--ph:#7fff8a;--dim:#4db56b;--bg:#020402}
+  html,body{height:100%;margin:0;background:#000;color:var(--ph);font-family:"VT323",monospace;touch-action:none}
+  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
+  .cab{width:min(1100px,96vw);height:min(700px,92vh);position:relative;background:var(--bg);border-radius:22px;padding:16px;
+      box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);transform:perspective(1200px) rotateX(1.5deg);overflow:hidden}
+  .cab::before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;
+    background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,.22) 3px,transparent 4px);
+    mix-blend-mode:soft-light;opacity:.35}
+  .scanbar{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);
+    opacity:.12;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3}
+  @keyframes roll{0%{top:-2px}100%{top:100%}}
+  h1{margin:2px 0 6px;letter-spacing:.08em;text-shadow:0 0 6px rgba(127,255,138,.45),0 0 18px rgba(127,255,138,.18)}
+  .hud{display:flex;gap:12px;align-items:center;color:var(--dim);flex-wrap:wrap}
+  .pill{border:1px solid rgba(127,255,138,.4);border-radius:10px;padding:6px 10px;background:rgba(10,20,12,.25)}
+  .btn{border:1px solid rgba(127,255,138,.55);padding:6px 12px;border-radius:10px;color:var(--ph);text-decoration:none;background:#07140a;cursor:pointer}
+  .btn:hover{background:#0c2616}
+  canvas{display:block;width:100%;height:calc(100% - 148px);border-radius:14px;margin-top:10px;background:#031006;touch-action:none}
+  progress[level]{appearance:none;-webkit-appearance:none;width:200px;height:14px;border-radius:8px;background:#062;overflow:hidden;border:1px solid rgba(127,255,138,.4)}
+  progress[level]::-webkit-progress-bar{background:#062}
+  progress[level]::-webkit-progress-value{background:#7fff8a}
+  .foot{position:absolute;left:0;right:0;bottom:0;padding:10px 16px;color:var(--dim);
+      background:linear-gradient(0deg,rgba(10,20,12,.65),rgba(10,20,12,0));display:flex;align-items:center;gap:12px;border-top:1px solid rgba(127,255,138,.18)}
+  .cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .touch{position:absolute;right:16px;bottom:96px;display:grid;grid-template-columns:92px 92px;gap:10px;opacity:.95}
+  .touch button{background:#07140a;border:1px solid rgba(127,255,138,.45);color:var(--ph);border-radius:8px;font-family:inherit;font-size:22px;padding:12px}
+  .touch button:active{transform:translateY(1px)}
+  .overlay{position:absolute;inset:16px 16px 140px 16px;display:flex;align-items:center;justify-content:center;
+    color:#7fff8a;background:rgba(3,16,6,.4);border:1px dashed rgba(127,255,138,.35);border-radius:14px;text-align:center;padding:14px}
+  .overlay.hide{display:none}
+  .overlay .msg{font-size:22px;line-height:1.4;text-shadow:0 0 10px rgba(127,255,138,.4);max-width:780px}
+  .story{color:#9bffb1}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cab">
+    <div class="scanbar"></div>
+    <h1>VAULT RUNNER — <span style="color:var(--dim)">Progression</span></h1>
+    <div class="hud">
+      <div class="pill">LV <b id="lv">1</b> / <b id="lvMax">5</b></div>
+      <div class="pill">🏁 Score: <b id="score">0</b></div>
+      <div class="pill">💯 Best: <b id="best">0</b></div>
+      <div class="pill">⚡ Speed: <b id="spd">1.0x</b></div>
+      <div class="pill">❤️ Lives: <b id="lives">3</b></div>
+      <div class="pill" style="display:flex;align-items:center;gap:8px">📈 Progress:
+        <progress level id="prog" value="0" max="100"></progress>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:10px">
+        <button class="btn" id="startBtn">START</button>
+        <button class="btn" id="pauseBtn">PAUSE</button>
+        <a class="btn" href="/" title="Home">HOME</a>
+      </div>
+    </div>
+    <canvas id="game" width="1064" height="540" aria-label="Runner field" tabindex="0"></canvas>
+    <div id="overlay" class="overlay">
+      <div class="msg" id="overlayMsg">TAP OR PRESS START<br/><span class="story">Prologue: The terminal flickers to life. Harper’s Ferry hums beyond the blast doors.</span></div>
+    </div>
+    <div class="foot">
+      INPUT: Space / ↑ jump • ↓ duck • Collect records for bonus • Reach the goal to unlock the next level.
+      <span class="cursor">▌</span>
+    </div>
+    <div class="touch" id="touch">
+      <button data-k="jump">JUMP</button>
+      <button data-k="duck">DUCK</button>
+    </div>
+  </div>
+</div>
+<script>
+/* ===== DOM ===== */
+const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
+const scoreEl = document.getElementById('score'), bestEl = document.getElementById('best'), spdEl = document.getElementById('spd');
+const livesEl = document.getElementById('lives'), lvEl = document.getElementById('lv'), lvMaxEl = document.getElementById('lvMax');
+const progEl = document.getElementById('prog'), overlay = document.getElementById('overlay'), overlayMsg = document.getElementById('overlayMsg');
+const startBtn = document.getElementById('startBtn'), pauseBtn = document.getElementById('pauseBtn'), touch = document.getElementById('touch');
+const isMobile = /Mobi|Android/i.test(navigator.userAgent); if(!isMobile) touch.style.display='none';
+
+/* ===== Levels ===== */
+const LEVELS = [
+  { goal: 300, baseSpeed: 220, spawn: 2.4, story: "Level 1 — The Road Out: Leave the vault corridor before power cycles." },
+  { goal: 650, baseSpeed: 260, spawn: 2.0, story: "Level 2 — Flooded Access: Drips and bots. Watch your footing." },
+  { goal: 1000, baseSpeed: 300, spawn: 1.7, story: "Level 3 — Maintenance Loop: Faster conveyors — time your jumps." },
+  { goal: 1500, baseSpeed: 330, spawn: 1.55, story: "Level 4 — Surface Gate: Radiation barrels jam the rails." },
+  { goal: 2100, baseSpeed: 360, spawn: 1.38, story: "Level 5 — Green Sky: Make it topside. Don’t look back." }
+];
+lvMaxEl.textContent = LEVELS.length;
+
+/* ===== State ===== */
+const W=cvs.width, H=cvs.height, GROUND = H-84;
+const player = { x:120, y:GROUND, w:40, h:58, vy:0, onGround:true, duck:false, frame:0 };
+let score=0, runScore=0, lives=3, best=Number(localStorage.getItem('vr_best_prog')||0);
+let lv = Number(localStorage.getItem('vr_lv_prog')||1);
+let t=0, last=0, speed=LEVELS[lv-1].baseSpeed, playing=false, paused=false;
+let obstacles=[], clouds=[], records=[], lastSpawnX=-1e9;
+bestEl.textContent = best; lvEl.textContent = lv; livesEl.textContent = lives;
+
+/* ===== Audio ===== */
+let AC, hum;
+function audioInit(){ if(AC) return; AC=new (window.AudioContext||window.webkitAudioContext)();
+  hum=AC.createOscillator(); const g=AC.createGain(); hum.type='sawtooth'; hum.frequency.value=48; g.gain.value=0.008;
+  hum.connect(g).connect(AC.destination); hum.start();
+}
+function beep(f=660, d=0.08, v=0.03){ if(!AC) return; const o=AC.createOscillator(), g=AC.createGain(); o.type='square'; o.frequency.value=f; g.gain.value=v; g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+d); o.connect(g).connect(AC.destination); o.start(); o.stop(AC.currentTime+d+0.01); }
+
+/* ===== Helpers ===== */
+function rand(a,b){ return a + Math.random()*(b-a); }
+function rect(a,b){ return !(a.x+a.w < b.x || a.x > b.x+b.w || a.y+a.h < b.y || a.y > b.y+b.h); }
+function addObstacle(xOffset=0){
+  const type = Math.random()<0.7 ? 'rad' : 'bot';
+  const h = type==='rad' ? rand(24,36) : rand(32,48);
+  const w = type==='rad' ? rand(18,26) : rand(26,34);
+  const minGap = 160 + (360 - speed)*0.28;
+  const x = Math.max(W+20+(xOffset||0), lastSpawnX + minGap);
+  lastSpawnX = x;
+  obstacles.push({x, y:GROUND-h, w, h, type, glow:0});
+}
+function addCloud(){ clouds.push({x:W+20, y:rand(40,200), w:rand(60,120), sp:rand(10,20)}); }
+function addRecord(){ records.push({x:W+20, y:GROUND-70, r:8, pulse:0}); }
+
+for(let i=0;i<3;i++) addCloud();
+
+/* ===== Input (with coyote + buffer) ===== */
+let coyote=0, jumpBuf=0; const COY=0.12, BUF=0.16;
+function queueJump(){ jumpBuf = BUF; }
+window.addEventListener('keydown', e=>{
+  if(e.key===' '||e.key==='ArrowUp'){ queueJump(); e.preventDefault(); }
+  if(e.key==='ArrowDown'){ player.duck=true; }
+  if(!playing){ startGame(false); }
+},{passive:false});
+window.addEventListener('keyup', e=>{ if(e.key==='ArrowDown') player.duck=false; });
+touch.addEventListener('touchstart', e=>{ const k=e.target.dataset.k; if(k!=='duck') queueJump(); if(k==='duck') player.duck=true; e.preventDefault(); },{passive:false});
+touch.addEventListener('touchend', e=>{ const k=e.target.dataset.k; if(k==='duck') player.duck=false; e.preventDefault(); },{passive:false});
+document.addEventListener('pointerdown', ()=>{ if(!playing) startGame(true); }, {passive:true});
+overlay.addEventListener('click', ()=>{ if(!playing) startGame(true); });
+
+function tryJump(){ if(player.onGround || coyote>0){ player.vy=-470; player.onGround=false; coyote=0; jumpBuf=0; beep(780,0.06,0.03);} }
+
+/* ===== Buttons ===== */
+startBtn.onclick = ()=> startGame(true);
+pauseBtn.onclick = ()=>{ if(!playing) return; paused=!paused; pauseBtn.textContent = paused?'RESUME':'PAUSE'; };
+
+/* ===== Level Control ===== */
+let spawnGraceMs = 5000; // 5 seconds grace after (re)start
+let startedAt = 0;
+
+function loadLevel(n){
+  lv = Math.max(1, Math.min(LEVELS.length, n));
+  localStorage.setItem('vr_lv_prog', lv);
+  const L = LEVELS[lv-1];
+  speed = L.baseSpeed;
+  t=0; last=0; runScore=0;
+  obstacles.length=0; records.length=0; clouds.length=0; for(let i=0;i<3;i++) addCloud();
+  lastSpawnX=-1e9;
+  player.x=120; player.y=GROUND; player.vy=0; player.onGround=true; player.duck=false;
+  lives=3; livesEl.textContent=lives;
+  progEl.max = L.goal; progEl.value = 0;
+  lvEl.textContent = lv;
+  overlayMsg.innerHTML = `<div class="story">${L.story}</div><br/>Reach <b>${L.goal}</b> distance to unlock the next level.`;
+}
+function levelComplete(){
+  beep(1040,0.2,0.05); beep(1240,0.2,0.05);
+  overlay.classList.remove('hide');
+  if(lv<LEVELS.length){
+    overlayMsg.innerHTML = `<b>LEVEL ${lv} COMPLETE</b><br/><div class="story">${LEVELS[lv-1].story}</div><br/>Tap START for Level ${lv+1}.`;
+    loadLevel(lv+1);
+  }else{
+    overlayMsg.innerHTML = `<b>ALL LEVELS COMPLETE</b><br/><div class="story">You step into the green sky. The archive awaits.</div><br/>Tap START to replay Level 5.`;
+    loadLevel(LEVELS.length);
+  }
+}
+
+/* ===== Reset / Start ===== */
+function resetRun(){
+  score=0; scoreEl.textContent=0; paused=false; pauseBtn.textContent='PAUSE';
+  overlay.classList.add('hide');
+  startedAt = performance.now();
+}
+function startGame(withAudio){
+  if(withAudio) audioInit();
+  resetRun();
+  playing=true;
+  cvs.focus();
+}
+
+/* ===== Auto-start ===== */
+window.addEventListener('load', ()=>{ loadLevel(lv); setTimeout(()=>{ if(!playing) startGame(false); }, 800); });
+
+/* ===== Animated pixel hero (vault‑style, original) ===== */
+const COLORS = {
+  hair:'#f2e55f', skin:'#f6e3c2', blue:'#49a1ea', yellow:'#f2e55f', boot:'#7b4a2b', outline:'#0b0f0c'
+};
+// 16x16 pixel maps for 4 run frames (inspired style, not a direct copy)
+const FRAMES = (()=>{
+  const base = [
+    "................",
+    "....hhhhhh......",
+    "...hhhhhhhh.....",
+    "...hsssssshh....",
+    "..hssmssmssh....",
+    "..hssssssssh....",
+    "...s..s..s......",
+    "....bbbb........",
+    "..bbyybyyb......",
+    ".bbybbbbbyb.....",
+    ".bbybbbbbyb.....",
+    ".bbybbbbbyb.....",
+    "..bby..ybb......",
+    "..oo....oo......",
+    ".ooo....ooo.....",
+    "................"
+  ];
+  // helper to tweak limbs for animation
+  const f = (dxArm, dyArm, dxLeg, dyLeg, armUp=false)=>{
+    let g = base.map(r=>r.split(""));
+    // add face features
+    g[6][5]=g[6][8]='o'; // eyes
+    g[7][6]=g[7][7]='m'; // mouth marks
+    // arms (blue) — simple offsets
+    g[9+dyArm][3+dxArm]='b'; g[9+dyArm][4+dxArm]='b';
+    g[9+dyArm][11-dxArm]='b'; g[9+dyArm][12-dxArm]='b';
+    if(armUp){ g[8+dyArm][12-dxArm]='b'; }
+    // legs (boots)
+    g[13+dyLeg][4+dxLeg]='t'; g[14+dyLeg][4+dxLeg]='t';
+    g[13-dyLeg][10-dxLeg]='t'; g[14-dyLeg][10-dxLeg]='t';
+    return g.map(r=>r.join(""));
+  };
+  return [ f(0,0,0,0,false), f(1,0,1,0,true), f(0,0,0,0,false), f(-1,0,-1,0,true) ];
+})();
+
+function drawFrame(ctx, px, x, y, scale=3, duck=false){
+  const mapColor = ch => ({
+    '.':null, 'h':COLORS.hair, 's':COLORS.skin, 'b':COLORS.blue, 'y':COLORS.yellow, 't':COLORS.boot, 'm':COLORS.outline, 'o':COLORS.outline
+  }[ch]);
+  const s = scale;
+  ctx.save();
+  ctx.translate(x, y);
+  if(duck) ctx.translate(0, 12); // crouch
+  // draw pixels
+  for(let row=0; row<px.length; row++){
+    for(let col=0; col<px[row].length; col++){
+      const c = mapColor(px[row][col]);
+      if(!c) continue;
+      ctx.fillStyle = c;
+      ctx.fillRect((col-8)*s, (row-16)*s, s, s);
+    }
+  }
+  // outline glow
+  ctx.strokeStyle = "rgba(127,255,138,0.8)";
+  ctx.lineWidth = 2;
+  const w = 16*s, h = (duck?13:16)*s;
+  ctx.strokeRect(-w/2, -h, w, h);
+  ctx.restore();
+}
+
+/* ===== Loop ===== */
+function loop(ts){
+  requestAnimationFrame(loop);
+  if(!playing||paused) return;
+  if(!last) last=ts;
+  const dt=Math.min(0.033,(ts-last)/1000); last=ts;
+  t+=dt;
+  const L = LEVELS[lv-1];
+
+  // difficulty scaling
+  speed += 1.5*dt;
+  const speedX = speed*dt;
+  spdEl.textContent = (speed/L.baseSpeed).toFixed(1)+'x';
+
+  // spawns (respect spawn grace)
+  const canSpawn = (performance.now() - startedAt) > 5000;
+  if(t%1.2<dt) addCloud();
+  if(canSpawn && t%L.spawn<dt) addObstacle();
+  if(canSpawn && t%5.4<dt) addRecord();
+
+  // physics
+  player.vy += 1180*dt;
+  player.y += player.vy*dt;
+  if(player.y >= GROUND){ if(!player.onGround) coyote=COY; player.y=GROUND; player.vy=0; player.onGround=true; } else player.onGround=false;
+
+  // jump helpers
+  if(jumpBuf>0){ jumpBuf -= dt; if(player.onGround || coyote>0){ player.vy=-470; player.onGround=false; coyote=0; jumpBuf=0; beep(780,0.06,0.03);} }
+  if(coyote>0) coyote -= dt;
+
+  // move items
+  clouds.forEach(c=> c.x -= (speed*0.22 + c.sp)*dt);
+  clouds = clouds.filter(c=> c.x + c.w > -20);
+  obstacles.forEach(o=>{ o.x -= speedX; o.glow = Math.max(0, o.glow-0.05); });
+  obstacles = obstacles.filter(o=> o.x+o.w>-20);
+  records.forEach(r=>{ r.x -= speedX; r.pulse += 0.18; });
+  records = records.filter(r=> r.x+r.r>-20);
+
+  // collisions
+  const pr = {x:player.x-18, y:player.y - (player.duck?28:36), w:36, h:(player.duck?26:36)};
+  let hit=false;
+  for(const o of obstacles){ if(rect(pr,o)){ hit=true; o.glow=1; break; } }
+  if(hit){
+    lives--; livesEl.textContent=lives; beep(260,0.14,0.05);
+    obstacles.forEach(o=>o.x += 40);
+    if(lives<=0){
+      playing=false; overlay.classList.remove('hide');
+      overlayMsg.innerHTML = `<b>LEVEL FAILED</b><br/>Tap START to retry Level ${lv}.`;
+      const b = Math.max(best, score); best = b; localStorage.setItem('vr_best_prog', b); bestEl.textContent = b;
+      return;
+    }
+  }
+
+  // pickups
+  records = records.filter(r=>{
+    const rb={x:r.x-r.r,y:r.y-r.r,w:r.r*2,h:r.r*2};
+    if(rect(pr,rb)){ score+=10; beep(940,0.06,0.04); return false; }
+    return true;
+  });
+
+  // distance score
+  runScore += Math.floor(10*dt);
+  score += Math.floor(7*dt);
+  scoreEl.textContent = score;
+  progEl.value = Math.min(L.goal, runScore);
+  if(runScore >= L.goal){ playing=false; levelComplete(); }
+
+  // draw
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle="rgba(127,255,138,0.08)"; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=32){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(let y=0;y<H;y+=32){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  clouds.forEach(c=>{ ctx.fillStyle="rgba(127,255,138,0.08)"; ctx.fillRect(c.x, c.y, c.w, 12); ctx.fillRect(c.x+10, c.y-8, c.w*0.6, 10); });
+  ctx.strokeStyle="rgba(127,255,138,0.35)"; ctx.beginPath(); ctx.moveTo(0,GROUND+0.5); ctx.lineTo(W,GROUND+0.5); ctx.stroke();
+
+  // hero frame animation (6 fps)
+  player.frame += dt*6;
+  const f = FRAMES[Math.floor(player.frame)%FRAMES.length];
+  drawFrame(ctx, f, player.x, player.y, 3, player.duck);
+
+  // obstacles & records
+  obstacles.forEach(o=>{
+    ctx.save(); ctx.fillStyle=`rgba(127,255,138,0.85)`; ctx.shadowColor=`rgba(127,255,138,${0.6*o.glow})`; ctx.shadowBlur=o.glow?18:6;
+    if(o.type==='rad'){ ctx.fillRect(o.x, o.y, o.w, o.h); ctx.fillStyle="#031006"; ctx.fillRect(o.x+o.w*0.25, o.y+o.h*0.35, o.w*0.5, 4); }
+    else { ctx.fillRect(o.x, o.y, o.w, o.h); ctx.fillRect(o.x+o.w*0.2, o.y-10, o.w*0.6, 10); }
+    ctx.restore();
+  });
+  records.forEach(r=>{
+    const rr = r.r + Math.sin(r.pulse)*1.5; ctx.beginPath(); ctx.arc(r.x, r.y, rr, 0, Math.PI*2);
+    ctx.fillStyle="rgba(127,255,138,0.9)"; ctx.shadowColor="rgba(127,255,138,0.7)"; ctx.shadowBlur=8; ctx.fill(); ctx.shadowBlur=0;
+    ctx.beginPath(); ctx.arc(r.x, r.y, 2.2, 0, Math.PI*2); ctx.fillStyle="#031006"; ctx.fill();
+  });
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
