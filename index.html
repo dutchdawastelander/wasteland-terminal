@@ -10,15 +10,27 @@
     :root{--ph:#7fff8a;--dim:#4db56b;--scan:rgba(0,0,0,.22)}
     html,body{background:#000;margin:0;color:var(--ph);font-family:"VT323",monospace}
     .wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
-    .term{width:min(1100px,95vw);height:min(720px,93vh);position:relative;background:#020402;border-radius:22px;padding:24px;
-      box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);transform:perspective(1200px) rotateX(2deg);}
+    /* Reserve space for the footer so it never overlaps content */
+    .term{
+      width:min(1100px,95vw);
+      height:min(720px,93vh);
+      position:relative;
+      background:#020402;
+      border-radius:22px;
+      padding:24px;
+      padding-bottom:120px; /* <-- added: space for footer */
+      box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);
+      transform:perspective(1200px) rotateX(2deg);
+      overflow:hidden;
+    }
     .term:before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.32}
     .term:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);background-size:6px 6px;mix-blend-mode:soft-light;opacity:.4;animation:crtFlicker 2.8s steps(2,end) infinite}
     .scanbar{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);opacity:.13;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3}
     .hdr{margin:0 0 6px;letter-spacing:.08em;font-size:32px;text-transform:uppercase;text-shadow: 0 0 6px rgba(127,255,138,.45), 0 0 18px rgba(127,255,138,.18);}
     .sub{color:var(--dim);margin-bottom:10px}
     .rule{height:1px;background:linear-gradient(90deg,var(--ph),transparent);opacity:.55;margin:8px 0 14px}
-    .menu{list-style:none;padding:0;margin:0;display:grid;gap:10px;position:relative;z-index:4}
+
+    .menu{list-style:none;padding:0;margin:0;display:grid;gap:10px;position:relative;z-index:4; margin-bottom:12px;}
     .item{display:flex;gap:10px;align-items:center;cursor:pointer;border:1px solid rgba(127,255,138,.28);background:rgba(8,16,10,.22);
       padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: background .15s linear, outline-color .15s linear, transform .06s;}
     .item:hover{ background:rgba(24,48,28,.4) }
@@ -31,8 +43,12 @@
     .item.chapter{margin-left:32px;border-style:dashed;display:none}
     .item.chapter .idx{opacity:.75}
 
-    /* status bar */
-    .status{position:absolute;left:0;right:0;bottom:0;padding:10px 16px;z-index:4;color:var(--dim);background:linear-gradient(0deg,rgba(10,20,12,.65),rgba(10,20,12,0));display:flex;align-items:center;gap:12px;border-top:1px solid rgba(127,255,138,.18)}
+    /* footer (status) — stays at bottom, but space is reserved above via padding-bottom */
+    .status{
+      position:absolute;left:0;right:0;bottom:0;padding:10px 16px;z-index:4;color:var(--dim);
+      background:linear-gradient(0deg,rgba(10,20,12,.65),rgba(10,20,12,0));
+      display:flex;align-items:center;gap:12px;border-top:1px solid rgba(127,255,138,.18)
+    }
     .status .left{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .status .right{flex:none;white-space:nowrap;}
     .cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
@@ -54,7 +70,7 @@
     .intro a{ color:#9abaff; text-decoration:none }
     .intro a:hover{ text-decoration:underline }
 
-    /* Card pattern reused for Merch and Game */
+    /* Card pattern (Merch & Game) */
     .panel-box{display:flex;justify-content:center;margin:12px 0 16px}
     .panel{
       width:100%;
@@ -64,29 +80,9 @@
       padding:14px 16px;
       box-shadow:inset 0 0 42px rgba(0,0,0,.7);
     }
-    .panel-title{
-      letter-spacing:.06em;
-      font-size:22px;
-      color:#7fff8a;
-      text-shadow:0 0 8px rgba(127,255,138,.35);
-      margin-bottom:6px;
-    }
-    .panel-copy{
-      color:#4db56b;
-      font-size:18px;
-      line-height:1.6;
-      margin:4px 0 10px;
-    }
-    .panel-btn{
-      display:inline-block;
-      padding:8px 14px;
-      border:1px solid rgba(127,255,138,.55);
-      border-radius:10px;
-      text-decoration:none;
-      color:#7fff8a;
-      background:#06140a;
-      font-size:18px;
-    }
+    .panel-title{letter-spacing:.06em;font-size:22px;color:#7fff8a;text-shadow:0 0 8px rgba(127,255,138,.35);margin-bottom:6px;}
+    .panel-copy{color:#4db56b;font-size:18px;line-height:1.6;margin:4px 0 10px;}
+    .panel-btn{display:inline-block;padding:8px 14px;border:1px solid rgba(127,255,138,.55);border-radius:10px;text-decoration:none;color:#7fff8a;background:#06140a;font-size:18px;}
     .panel-btn:hover{ background:#0b2a12; }
     .panel-note{ margin-top:6px; font-size:14px; color:#4db56b; opacity:.9; }
 
@@ -110,29 +106,23 @@
         Jump in via the menu below, or start with
         <a href="/no-home-in-the-waste-chapter-1-the-road-out-of-new-york.html">No Home in the Waste — Chapter 1</a>.
         For info and policies, see <a href="/about.html">About</a> and <a href="/privacy.html">Privacy</a>.
-        <!-- No ads are served on this page by design. -->
       </div>
 
-      <!-- === Merch Terminal === -->
+      <!-- Merch -->
       <section class="panel-box" aria-label="Merch Terminal">
         <div class="panel">
           <div class="panel-title">MERCH TERMINAL</div>
-          <p class="panel-copy">
-            Support the archive and look good doing it. New drops powered by Printful:
-            tees, mugs, and more — all in the Vault-Tec Records style.
-          </p>
+          <p class="panel-copy">Support the archive and look good doing it. New drops powered by Printful: tees, mugs, and more — all in the Vault-Tec Records style.</p>
           <a class="panel-btn" href="https://vaulttecrecords.printful.me/" target="_blank" rel="noopener">OPEN STORE</a>
           <div class="panel-note">Fulfilled &amp; shipped by Printful</div>
         </div>
       </section>
 
-      <!-- === Game Terminal (new) === -->
+      <!-- Game -->
       <section class="panel-box" aria-label="Game Terminal">
         <div class="panel">
           <div class="panel-title">GAME TERMINAL</div>
-          <p class="panel-copy">
-            Take a break and run the vault corridors. Jump hazards, collect records, and beat each level.
-          </p>
+          <p class="panel-copy">Take a break and run the vault corridors. Jump hazards, collect records, and beat each level.</p>
           <a class="panel-btn" href="/vault-runner-progression-v3.html">PLAY VAULT RUNNER</a>
           <div class="panel-note">Mobile-friendly • 5 levels • 5-second safe start</div>
         </div>
@@ -140,8 +130,9 @@
 
       <ul id="menu" class="menu" role="menu" aria-label="Stories & Chapters"></ul>
 
+      <!-- Footer/status (space reserved above) -->
       <div class="status" aria-live="polite">
-        <div class="left">INPUT: <span id="status">Use ↑/↓ to navigate chapters. ENTER to open.</span></div>
+        <div class="left">INPUT: <span id="status">Open a story (click to expand), then pick a chapter. ↑/↓ to navigate, ENTER to open.</span></div>
         <div class="right">READY<span class="cursor">▌</span></div>
       </div>
     </div>
@@ -167,32 +158,55 @@
         {title:"Chapter 8 — Aimee",href:"hf43-chapter-8-aimee.html"}
       ]}
     ];
+
     const menu=document.getElementById("menu"),statusEl=document.getElementById("status");
 
     function buildMenu(){
       menu.innerHTML="";
       STORIES.forEach((story,sIdx)=>{
         const liStory=document.createElement("li");
-        liStory.className="item story"; liStory.dataset.type="story"; liStory.dataset.index=sIdx; liStory.setAttribute("role","menuitem");
-        liStory.innerHTML=`<span class="idx">[–]</span><span class="caret">▾</span><span class="title">${story.title}</span><span class="badge">${story.chapters.length} ch.</span>`;
+        liStory.className="item story";
+        liStory.dataset.type="story";
+        liStory.dataset.index=sIdx;
+        liStory.setAttribute("role","menuitem");
+        // caret starts collapsed ▶
+        liStory.innerHTML=`<span class="idx">[–]</span><span class="caret">▶</span><span class="title">${story.title}</span><span class="badge">${story.chapters.length} ch.</span>`;
         menu.appendChild(liStory);
+
+        // start hidden
         story.chapters.forEach((ch,cIdx)=>{
           const liCh=document.createElement("li");
-          liCh.className="item chapter"; liCh.dataset.type="chapter"; liCh.dataset.s=sIdx; liCh.dataset.c=cIdx; liCh.setAttribute("role","menuitem");
-          liCh.style.display="none"; liCh.innerHTML=`<span class="idx">[${cIdx+1}]</span><span class="title">${ch.title}</span>`;
+          liCh.className="item chapter";
+          liCh.dataset.type="chapter";
+          liCh.dataset.s=sIdx; liCh.dataset.c=cIdx;
+          liCh.setAttribute("role","menuitem");
+          liCh.style.display="none";
+          liCh.innerHTML=`<span class="idx">[${cIdx+1}]</span><span class="title">${ch.title}</span>`;
           menu.appendChild(liCh);
         });
       });
     }
     buildMenu();
 
-    function chaptersOfStory(sIdx){ return [...menu.querySelectorAll('.item.chapter')].filter(el=>+el.dataset.s===+sIdx); }
+    function chaptersOfStory(sIdx){
+      return [...menu.querySelectorAll('.item.chapter')].filter(el=>+el.dataset.s===+sIdx);
+    }
+    function anyVisibleChapters(){
+      return [...menu.querySelectorAll('.item.chapter')].some(el=>el.style.display!=="none");
+    }
     function toggleStory(sIdx){
-      const rows=chaptersOfStory(sIdx); const header=[...menu.querySelectorAll('.item.story')][sIdx];
+      const rows=chaptersOfStory(sIdx);
+      const header=[...menu.querySelectorAll('.item.story')][sIdx];
       const open=rows[0] && rows[0].style.display!=="none";
       rows.forEach(el=>el.style.display=open?"none":"flex");
-      const caret=header?.querySelector(".caret"); if(caret) caret.textContent=open?"▶":"▾";
-      if(!open) setActiveFirstVisible();
+      const caret=header?.querySelector(".caret");
+      if(caret) caret.textContent=open?"▶":"▾";
+      if(!open){
+        statusEl.textContent="Use ↑/↓ to navigate chapters. ENTER to open.";
+        setActiveFirstVisible();
+      }else if(!anyVisibleChapters()){
+        statusEl.textContent="Open a story (click to expand), then pick a chapter.";
+      }
     }
 
     menu.addEventListener("click",(e)=>{
@@ -215,14 +229,14 @@
 
     window.addEventListener("keydown",(e)=>{
       const vis=visibleChapters();
-      if(e.key==="ArrowDown"){ setActive(activeIdx+1); e.preventDefault(); }
-      if(e.key==="ArrowUp")  { setActive(activeIdx-1); e.preventDefault(); }
+      if(e.key==="ArrowDown"){ setActive(activeIdx+1); if(vis.length) e.preventDefault(); }
+      if(e.key==="ArrowUp")  { setActive(activeIdx-1); if(vis.length) e.preventDefault(); }
       if(e.key==="Enter" && vis.length) openChapter(vis[activeIdx]);
       if(/^[1-9]$/.test(e.key)){ const n=(+e.key)-1; if(vis[n]){ setActive(n); openChapter(vis[n]); } }
     });
 
-    // Expand first story by default
-    toggleStory(0); setActiveFirstVisible();
+    // NOTE: removed the old auto-expand call.
+    // Stories now load COLLAPSED by default.
 
     // Reader mode toggle
     const t=document.getElementById('toggleMode');
@@ -232,3 +246,4 @@
   </script>
 </body>
 </html>
+
