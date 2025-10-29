@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Vault-Tec Records — Terminal Simulation</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<meta name="description" content="A Fallout-inspired Vault-Tec terminal simulation. Explore archives, incident reports, restricted files, and system messages.">
+<style>
+:root{--ph:#7fff8a;--dim:#4db56b;--scan:rgba(0,0,0,.22)}
+html,body{background:#000;margin:0;color:var(--ph);font-family:"VT323",monospace}
+.wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:
+  radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
+.term{width:min(1100px,95vw);height:min(720px,93vh);position:relative;background:#020402;
+  border-radius:22px;padding:24px;box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);
+  transform:perspective(1200px) rotateX(2deg);overflow:hidden}
+.term:before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;
+  background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);
+  mix-blend-mode:soft-light;opacity:.32}
+.term:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;
+  background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);
+  background-size:6px 6px;mix-blend-mode:soft-light;opacity:.4;animation:crtFlicker 2.8s steps(2,end) infinite}
+.scanbar{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);
+  opacity:.13;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3}
+.main{position:absolute;inset:18px 18px 54px 18px;overflow:auto}
+.status{position:absolute;left:0;right:0;bottom:0;padding:10px 16px;z-index:4;color:var(--dim);
+  background:linear-gradient(0deg,rgba(10,20,12,.65),rgba(10,20,12,0));display:flex;align-items:center;gap:12px;border-top:1px solid rgba(127,255,138,.18)}
+.status .left{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.status .right{flex:none;white-space:nowrap;}
+.cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
+@keyframes roll{0%{top:-2px}100%{top:100%}}
+@keyframes crtFlicker{0%,100%{opacity:.58}50%{opacity:.64}}
+@keyframes blink{50%{opacity:0}}
+h1,h2{margin:.2em 0}
+.logo{opacity:.9;letter-spacing:.06em;text-shadow:0 0 6px rgba(127,255,138,.45), 0 0 18px rgba(127,255,138,.18)}
+.dim{color:var(--dim)}
+.menu{margin:10px 0 0;display:grid;gap:8px}
+.btn{display:flex;align-items:center;gap:8px;border:1px solid rgba(127,255,138,.28);background:rgba(8,16,10,.22);
+  padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;cursor:pointer;text-decoration:none;color:inherit}
+.btn:hover{background:rgba(24,48,28,.4)}
+.small{font-size:18px}
+.kbd{display:inline-block;border:1px solid rgba(127,255,138,.35);border-radius:6px;padding:2px 6px;margin:0 3px}
+pre{white-space:pre-wrap;word-break:break-word}
+hr{border:0;border-top:1px solid rgba(127,255,138,.2);margin:12px 0}
+.inputline{margin-top:6px}
+.inputline input{width:100%;background:#030a06;border:1px solid rgba(127,255,138,.25);color:var(--ph);
+  border-radius:8px;padding:10px;font-family:inherit;font-size:20px}
+.note{font-size:16px;color:var(--dim)}
+.link{color:#9abaff;text-decoration:none}
+.link:hover{text-decoration:underline}
+.badge{margin-left:auto;color:var(--dim);font-size:16px}
+.unlocked{color:#7fff8a}
+.locked{color:#9b6}
+</style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="term" role="application" aria-label="Vault-Tec Terminal Simulation">
+    <div class="scanbar"></div>
+    <div id="screen" class="main" aria-live="polite"></div>
+    <div class="status">
+      <div class="left">INPUT: <span id="status">Initializing…</span></div>
+      <div class="right">
+        READY<span class="cursor">▌</span>
+        &nbsp;|&nbsp;<a class="link" href="/" title="Return to main terminal">HOME</a>
+        &nbsp;|&nbsp;<a class="link" href="https://vaulttecrecords.printful.me/" target="_blank" rel="noopener">MERCH</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let AC, hum;
+function audioInit(){
+  if(AC) return;
+  AC = new (window.AudioContext||window.webkitAudioContext)();
+  hum = AC.createOscillator(); hum.type='sawtooth';
+  const humGain = AC.createGain(); humGain.gain.value = 0.008;
+  hum.frequency.value = 50;
+  hum.connect(humGain).connect(AC.destination); hum.start();
+}
+function keyClick(){
+  if(!AC) return;
+  const o=AC.createOscillator(), g=AC.createGain();
+  o.type='square'; o.frequency.value=380;
+  g.gain.value=0.02; g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+0.04);
+  o.connect(g).connect(AC.destination); o.start(); o.stop(AC.currentTime+0.05);
+}
+function chime(){
+  if(!AC) return;
+  const freqs=[659,784,988];
+  freqs.forEach((f,i)=>{
+    const o=AC.createOscillator(), g=AC.createGain();
+    o.type='sine'; o.frequency.value=f;
+    g.gain.value=0.0001;
+    g.gain.exponentialRampToValueAtTime(0.03, AC.currentTime+0.01+i*0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+0.35+i*0.02);
+    o.connect(g).connect(AC.destination); o.start(); o.stop(AC.currentTime+0.5+i*0.02);
+  });
+}
+
+const screen = document.getElementById('screen');
+const statusEl = document.getElementById('status');
+
+const STATE = {
+  name: localStorage.getItem('vtr_name') || null,
+  unlocked: JSON.parse(localStorage.getItem('vtr_unlocked') || '[]'),
+  codes: { PROJECT_ALPHA:'107', PROJECT_HF43:'431', BLACK_BOX:'742' }
+};
+function save(){ localStorage.setItem('vtr_unlocked', JSON.stringify(STATE.unlocked)); }
+function isUnlocked(key){ return STATE.unlocked.includes(key); }
+function unlock(key){ if(!isUnlocked(key)){ STATE.unlocked.push(key); save(); chime(); } }
+
+function write(html){ screen.insertAdjacentHTML('beforeend', html); screen.scrollTop = screen.scrollHeight; }
+function clear(){ screen.innerHTML=''; }
+function setStatus(t){ statusEl.textContent = t; }
+
+function inputLine(placeholder, onEnter){
+  const id = 'in_'+Math.random().toString(36).slice(2);
+  write(`<div class="inputline"><input id="${id}" type="text" placeholder="${placeholder}"></div>`);
+  const el = document.getElementById(id);
+  el.focus();
+  el.addEventListener('keydown', (e)=>{
+    if(!AC) audioInit();
+    keyClick();
+    if(e.key === 'Enter'){
+      const v = el.value.trim();
+      el.setAttribute('disabled','disabled');
+      onEnter(v);
+    }
+  });
+}
+
+function boot(){
+  clear();
+  setStatus('Booting… press any key to enable audio');
+  write(`<h1 class="logo">VAULT-TEC // SYSTEM BOOT</h1><pre class="dim" id="bootlog"></pre>`);
+  const lines = [
+    '> BIOS CHECK.............. OK',
+    '> MEMORY BANKS............ OK',
+    '> ARCHIVE DRIVE........... ONLINE',
+    '> NETWORK LINK............ OFFLINE',
+    '> USER AUTHORIZATION...... REQUIRED',
+    '',
+    'ENTER NAME OR ID:'
+  ];
+  const log = document.getElementById('bootlog');
+  let i=0;
+  const t = setInterval(()=> {
+    log.textContent += (i<lines.length ? lines[i] : '') + '\n';
+    i++; screen.scrollTop = screen.scrollHeight;
+    if(i>lines.length){
+      clearInterval(t);
+      inputLine('e.g., Technician-204', (v)=>{
+        STATE.name = v || ('Technician-' + Math.floor(100+Math.random()*900));
+        localStorage.setItem('vtr_name', STATE.name);
+        welcome();
+      });
+    }
+  }, 220);
+  window.addEventListener('pointerdown', audioInit, {once:true});
+  window.addEventListener('keydown', audioInit, {once:true});
+}
+
+function welcome(){
+  clear();
+  setStatus('Main console ready');
+  write(`<h1 class="logo">WELCOME, ${STATE.name.toUpperCase()}</h1>`);
+  write(`<pre class="dim">> ACCESSING MAIN CONSOLE...</pre>`);
+  mainMenu();
+}
+
+function mainMenu(){
+  write(`<hr><h2>==== VAULT-TEC ARCHIVAL TERMINAL ====</h2>
+  <div class="menu">
+    <a class="btn" href="#" data-cmd="archives">1. ARCHIVES <span class="badge">Read logs</span></a>
+    <a class="btn" href="#" data-cmd="incidents">2. INCIDENT REPORTS <span class="badge">Internal memos</span></a>
+    <a class="btn" href="#" data-cmd="restricted">3. RESTRICTED FILES <span class="badge">Codes required</span></a>
+    <a class="btn" href="#" data-cmd="system">4. SYSTEM MESSAGES <span class="badge">V-TEC notices</span></a>
+    <a class="btn" href="#" data-cmd="exit">5. EXIT TERMINAL <span class="badge">Return</span></a>
+  </div>
+  <div class="small dim">Tip: press <span class="kbd">1</span>..<span class="kbd">5</span> • type ARCHIVES / RESTRICTED, etc.</div>`);
+  attachMenu();
+  waitForCommand();
+}
+
+function attachMenu(){
+  screen.querySelectorAll('[data-cmd]').forEach(a=>{
+    a.onclick = (e)=>{ e.preventDefault(); route(a.dataset.cmd); if(!AC) audioInit(); keyClick(); };
+  });
+}
+
+function waitForCommand(){
+  inputLine('Type 1..5 or ARCHIVES / INCIDENTS / RESTRICTED / SYSTEM / EXIT', (v)=>{
+    route(v.trim().toLowerCase());
+  });
+}
+
+function route(cmd){
+  const map = {
+    '1':'archives','archives':'archives',
+    '2':'incidents','incident reports':'incidents','incidents':'incidents',
+    '3':'restricted','restricted':'restricted',
+    '4':'system','system messages':'system',
+    '5':'exit','exit':'exit','quit':'exit'
+  };
+  const dest = map[cmd] || '';
+  if(!dest){ write(`<pre>> ${cmd}\nUNKNOWN COMMAND</pre>`); return waitForCommand(); }
+  if(dest==='archives') return archives();
+  if(dest==='incidents') return incidents();
+  if(dest==='restricted') return restricted();
+  if(dest==='system') return systemMsgs();
+  if(dest==='exit') return exitScreen();
+}
+
+function archives(){
+  write(`<hr><h2>ARCHIVES</h2>
+  <pre class="dim">Select a file to view summary or jump to the full log.</pre>
+  <div class="menu">
+    <a class="btn" href="/no-home-in-the-waste-chapter-1-the-road-out-of-new-york.html">[01] No Home in the Waste <span class="badge">Open page</span></a>
+    <a class="btn" href="/hf43-chapter-7-the-founder-tightened.html">[02] Harper’s Ferry (HF-43) — The Founder (Tightened) <span class="badge">Open page</span></a>
+  </div>`);
+  return waitForCommand();
+}
+
+function incidents(){
+  const blips = [
+    'INCIDENT HF-21-A — Power fluctuations noted in lower sectors. Overseer denies anomaly.',
+    'INCIDENT LH-09 — Unauthorized access attempt from Maintenance. Log scrubbed.',
+    'MEMO: “If you see green ash falling indoors, report to Med Bay immediately.”',
+    'NOTICE: Water recycler efficiency down 4.3%. Ration schedule unchanged.',
+    'MEMO: Initiate Project BLACK-BOX drills. Do not inform residents.'
+  ];
+  const pick = blips[(Math.random()*blips.length)|0];
+  write(`<hr><h2>INCIDENT REPORTS</h2><pre>${pick}</pre>`);
+  return waitForCommand();
+}
+
+function restricted(){
+  const items = [
+    {key:'PROJECT_ALPHA', label:'PROJECT ALPHA — Unindexed Transmission', code:STATE.codes.PROJECT_ALPHA},
+    {key:'PROJECT_HF43',  label:'PROJECT HF-43 — Oversight Brief', code:STATE.codes.PROJECT_HF43},
+    {key:'BLACK_BOX',     label:'BLACK-BOX — Emergency Directive', code:STATE.codes.BLACK_BOX},
+  ];
+  write(`<hr><h2>RESTRICTED FILES</h2>`);
+  items.forEach(it=>{
+    const state = isUnlocked(it.key) ? '<span class="unlocked">UNLOCKED</span>' : '<span class="locked">LOCKED</span>';
+    write(`<div class="btn" data-ask="${it.key}">${it.label} <span class="badge">${state}</span></div>`);
+  });
+  screen.querySelectorAll('[data-ask]').forEach(b=>{
+    b.onclick = (e)=>{ e.preventDefault(); const k=b.dataset.ask; askCode(k); if(!AC) audioInit(); keyClick(); };
+  });
+  write(`<div class="small dim">Hint: Codes are hidden across site pages. Example: “f1rst, sec0nd, th7rd” → <b>107</b>.</div>`);
+  return waitForCommand();
+}
+
+function askCode(key){
+  const labels = {
+    PROJECT_ALPHA:'PROJECT ALPHA — Unindexed Transmission',
+    PROJECT_HF43: 'PROJECT HF-43 — Oversight Brief',
+    BLACK_BOX:    'BLACK-BOX — Emergency Directive'
+  };
+  write(`<pre>> ${labels[key]}\nENTER ACCESS CODE:</pre>`);
+  inputLine('Enter code (numbers)', (v)=>{
+    if(v === STATE.codes[key]){
+      unlock(key);
+      showRestrictedFile(key);
+    } else {
+      write(`<pre>ACCESS DENIED</pre>`);
+    }
+    waitForCommand();
+  });
+}
+
+function showRestrictedFile(key){
+  const lore = {
+    PROJECT_ALPHA: `
+> ACCESS GRANTED
+> FILE UNSEALED: PROJECT ALPHA
+— Transcript —
+"Signal trace resolved near HF sector. Origin unknown. If you found this, you’re already inside the loop."
+( New waypoint revealed on the main site… )`,
+    PROJECT_HF43: `
+> ACCESS GRANTED
+> FILE UNSEALED: HF-43 OVERSIGHT BRIEF
+— Redacted Summary —
+"Founder insisted on tightening Phase 3 timelines. Witness claimed HF43 now 'remembers'. Recommend audit."
+( Check HF-43 chapters for an embedded relay. )`,
+    BLACK_BOX: `
+> ACCESS GRANTED
+> FILE UNSEALED: EMERGENCY DIRECTIVE — BLACK-BOX
+— Directive —
+"If the surface turns quiet, listen harder. The hum is not the machine; it is the record playing back."
+( Final clue points back to the Archives. )`
+  };
+  write(`<pre>${lore[key]}</pre>`);
+  if(isUnlocked('PROJECT_ALPHA') && isUnlocked('PROJECT_HF43') && isUnlocked('BLACK_BOX')){
+    endgame();
+  }
+}
+
+function systemMsgs(){
+  const msgs = [
+    'V-TEC: Technician, please remain at your station.',
+    'V-TEC: Mainframe temperature exceeds safe threshold.',
+    'V-TEC: Do not inquire about Project BLACK-BOX.',
+    'V-TEC: If you hear music in the vents, report immediately.',
+    'V-TEC: Your curiosity is an asset. Within limits.'
+  ];
+  const m = msgs[(Math.random()*msgs.length)|0];
+  write(`<hr><h2>SYSTEM MESSAGES</h2><pre>${m}</pre>`);
+  return waitForCommand();
+}
+
+function endgame(){
+  write(`<hr><h2>=== FINAL FILE UNLOCKED ===</h2><pre>
+> PROJECT: GENESIS // CLASSIFIED //
+"If you’re reading this, the Vault has failed. The archive will outlive the walls.
+Leave one light on. Someone will find it."
+
+( You’ve unlocked all restricted files. A new entry appears in ARCHIVES… )</pre>`);
+  if(!isUnlocked('OVERSEER_LOG')){ unlock('OVERSEER_LOG'); }
+}
+
+function exitScreen(){
+  write(`<hr><h2>EXIT</h2><pre>SESSION ENDED. You may close this tab or <a class="link" href="/">return to the main terminal</a>.</pre>`);
+  return waitForCommand();
+}
+
+window.addEventListener('keydown', (e)=>{
+  if(!AC) audioInit();
+  if(['1','2','3','4','5'].includes(e.key)){
+    keyClick();
+    route(e.key);
+  }
+});
+
+boot();
+</script>
+</body>
+</html>
