@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+<title>Vault Commando — Prototype (CRT)</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+<meta name="description" content="Contra-style side-scrolling shooter prototype in Fallout CRT style."/>
+<style>
+  :root{--ph:#7fff8a;--dim:#4db56b;--bg:#020402}
+  html,body{height:100%;margin:0;background:#000;color:var(--ph);font-family:"VT323",monospace;touch-action:none}
+  .wrap{min-height:100dvh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
+  .cab{width:min(1100px,96vw);min-height:calc(100dvh - 24px);position:relative;background:var(--bg);border-radius:22px;padding:16px 16px calc(96px + env(safe-area-inset-bottom));
+      box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);transform:perspective(1200px) rotateX(1.5deg);overflow:hidden}
+  .cab::before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,rgba(0,0,0,.22) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.35}
+  .scanbar{position:absolute;left:0;right:0;height:2px;top:-2px;background:linear-gradient(90deg,transparent,rgba(127,255,138,.6),transparent);opacity:.12;filter:blur(.3px);animation:roll 6.5s linear infinite;z-index:3}
+  @keyframes roll{0%{top:-2px}100%{top:100%}}
+  h1{margin:2px 0 6px;letter-spacing:.08em;text-shadow:0 0 6px rgba(127,255,138,.45),0 0 18px rgba(127,255,138,.18)}
+  .hud{display:flex;gap:8px;align-items:center;color:var(--dim);flex-wrap:wrap}
+  .pill{border:1px solid rgba(127,255,138,.4);border-radius:10px;padding:6px 10px;background:rgba(10,20,12,.25);font-size:18px}
+  .btn{border:1px solid rgba(127,255,138,.55);padding:6px 12px;border-radius:10px;color:var(--ph);text-decoration:none;background:#07140a;cursor:pointer;font-size:18px}
+  .btn:hover{background:#0c2616}
+  canvas{display:block;width:100%;height:58vh;border-radius:14px;margin-top:10px;background:#031006;touch-action:none}
+  .foot{margin-top:10px;padding:8px 12px;color:var(--dim);background:linear-gradient(0deg,rgba(10,20,12,.65),rgba(10,20,12,0));display:flex;align-items:center;gap:12px;border-top:1px solid rgba(127,255,138,.18)}
+  .cursor{display:inline-block;width:.65em;animation:blink 1.05s steps(1,end) infinite}
+  .touch{position:fixed;left:16px;right:16px;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;gap:10px;z-index:10}
+  .touch .cluster{display:flex;gap:10px}
+  .touch button{background:#07140a;border:1px solid rgba(127,255,138,.45);color:var(--ph);border-radius:8px;font-family:inherit;font-size:20px;padding:12px 14px;min-width:88px}
+  .touch button:active{transform:translateY(1px)}
+  .overlay{position:absolute;left:16px;right:16px;top:100px;bottom:150px;display:flex;align-items:center;justify-content:center;
+    color:#7fff8a;background:rgba(3,16,6,.4);border:1px dashed rgba(127,255,138,.35);border-radius:14px;text-align:center;padding:14px;z-index:5}
+  .overlay.hide{display:none}
+  .overlay .msg{font-size:22px;line-height:1.45;text-shadow:0 0 10px rgba(127,255,138,.4);max-width:800px}
+  .story{color:#9bffb1}
+  @media (max-width: 640px){
+    canvas{height:54vh}
+    .overlay{top:84px;bottom:200px}
+    .touch button{min-width:74px;font-size:18px;padding:10px 12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="cab">
+    <div class="scanbar"></div>
+    <h1>VAULT COMMANDO — <span style="color:var(--dim)">Prototype</span></h1>
+    <div class="hud">
+      <div class="pill">LV <b id="lv">1</b> / 1</div>
+      <div class="pill">🏁 Dist: <b id="dist">0</b></div>
+      <div class="pill">💯 Score: <b id="score">0</b></div>
+      <div class="pill">❤️ Lives: <b id="lives">3</b></div>
+      <div style="margin-left:auto;display:flex;gap:8px">
+        <button class="btn" id="startBtn">START</button>
+        <button class="btn" id="pauseBtn">PAUSE</button>
+        <a class="btn" href="/" title="Home">HOME</a>
+      </div>
+    </div>
+
+    <canvas id="game" width="1064" height="540" aria-label="Shooter field" tabindex="0"></canvas>
+
+    <div id="overlay" class="overlay">
+      <div class="msg" id="overlayMsg">
+        <b>PROTOTYPE — Vault Breach</b><br/><br/>
+        Left/Right to move • <b>↑</b> to jump • <b>F</b> or <b>TAP SHOOT</b> to fire.<br/>
+        Survive the corridor and defeat the boss.<br/><br/>
+        <span class="story">Tip: You have brief invincibility after a hit.</span>
+      </div>
+    </div>
+
+    <div class="foot">
+      INPUT: ←/→ move • ↑ jump • F shoot • On mobile use buttons. Defeat the boss to win.
+      <span class="cursor">▌</span>
+    </div>
+
+    <div class="touch" id="touch">
+      <div class="cluster">
+        <button data-k="left">LEFT</button>
+        <button data-k="right">RIGHT</button>
+      </div>
+      <div class="cluster">
+        <button data-k="jump">JUMP</button>
+        <button data-k="shoot">SHOOT</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== DOM ===== */
+const cvs = document.getElementById('game'), ctx = cvs.getContext('2d');
+const scoreEl = document.getElementById('score'), distEl = document.getElementById('dist'), livesEl = document.getElementById('lives');
+const startBtn = document.getElementById('startBtn'), pauseBtn = document.getElementById('pauseBtn');
+const overlay = document.getElementById('overlay'), overlayMsg = document.getElementById('overlayMsg');
+const touch = document.getElementById('touch');
+const isMobile = /Mobi|Android/i.test(navigator.userAgent); if(!isMobile) touch.style.display='none';
+
+/* ===== DPR scaling ===== */
+function resizeCanvas(){
+  const ratio = Math.min(1.6, window.devicePixelRatio || 1);
+  const cssW = cvs.clientWidth, cssH = cvs.clientHeight;
+  cvs.width = Math.floor(cssW * ratio);
+  cvs.height = Math.floor(cssH * ratio);
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+}
+addEventListener('resize', resizeCanvas, {passive:true});
+addEventListener('orientationchange', ()=>setTimeout(resizeCanvas, 300), {passive:true});
+new ResizeObserver(resizeCanvas).observe(cvs);
+
+/* ===== Audio ===== */
+let AC;
+function audioInit(){ if(AC) return; AC=new (window.AudioContext||window.webkitAudioContext)(); }
+function tone(freq, dur=0.08, type='square', gain=0.03){
+  if(!AC) return; const o=AC.createOscillator(), g=AC.createGain();
+  o.type=type; o.frequency.value=freq; g.gain.value=gain;
+  g.gain.exponentialRampToValueAtTime(0.0001, AC.currentTime+dur);
+  o.connect(g).connect(AC.destination); o.start(); o.stop(AC.currentTime+dur+0.01);
+}
+
+/* ===== World ===== */
+let W=cvs.clientWidth, H=cvs.clientHeight;
+const GROUND_Y = ()=> H - 88;
+let playing=false, paused=false, t=0, last=0;
+let camX=0, dist=0, score=0, lives=3, iFrames=0;
+const GRAV=1500, JUMP_V=-520, SPEED=240;
+const bullets=[], enemies=[], particles=[];
+let boss=null, bossTriggered=false;
+
+const keys = {left:false,right:false,up:false,shoot:false};
+const player = {x:140, y:GROUND_Y(), vy:0, w:26, h:40, facing:1, onGround:true, fireCd:0, frame:0};
+
+function reset(){
+  camX=0; dist=0; score=0; lives=3; iFrames=0; boss=null; bossTriggered=false;
+  bullets.length=0; enemies.length=0; particles.length=0;
+  player.x=140; player.y=GROUND_Y(); player.vy=0; player.onGround=true; player.facing=1; player.fireCd=0; player.frame=0;
+  overlay.classList.add('hide'); paused=false; pauseBtn.textContent='PAUSE';
+}
+
+/* ===== Input ===== */
+addEventListener('keydown', e=>{
+  if(e.key==='ArrowLeft') keys.left=true;
+  if(e.key==='ArrowRight') keys.right=true;
+  if(e.key==='ArrowUp') keys.up=true;
+  if(e.key==='f' || e.key==='F') keys.shoot=true;
+  if(!playing){ startGame(true); }
+});
+addEventListener('keyup', e=>{
+  if(e.key==='ArrowLeft') keys.left=false;
+  if(e.key==='ArrowRight') keys.right=false;
+  if(e.key==='ArrowUp') keys.up=false;
+  if(e.key==='f' || e.key==='F') keys.shoot=false;
+});
+touch.addEventListener('touchstart', e=>{
+  const k=e.target.dataset.k;
+  if(k==='left') keys.left=true;
+  if(k==='right') keys.right=true;
+  if(k==='jump') keys.up=true;
+  if(k==='shoot') keys.shoot=true;
+  e.preventDefault();
+},{passive:false});
+touch.addEventListener('touchend', e=>{
+  const k=e.target.dataset.k;
+  if(k==='left') keys.left=false;
+  if(k==='right') keys.right=false;
+  if(k==='jump') keys.up=false;
+  if(k==='shoot') keys.shoot=false;
+  e.preventDefault();
+},{passive:false});
+
+startBtn.onclick = ()=> startGame(true);
+pauseBtn.onclick = ()=>{ if(!playing) return; paused=!paused; pauseBtn.textContent = paused?'RESUME':'PAUSE'; };
+
+function startGame(withAudio){
+  if(withAudio) audioInit();
+  playing=true; reset();
+}
+
+/* ===== Entities ===== */
+function spawnEnemy(){
+  const type = Math.random()<0.6 ? 'grunt' : 'flyer';
+  if(type==='grunt'){
+    enemies.push({type, x:camX+W+40, y:GROUND_Y()-32, w:22, h:32, hp:1, sp:rand(80,130)});
+  }else{
+    enemies.push({type, x:camX+W+40, y:rand(120, H*0.55), w:22, h:18, hp:1, sp:rand(100,140), t:rand(0,Math.PI*2)});
+  }
+}
+function spawnBoss(){
+  boss = {x:camX+W+120, y:GROUND_Y()-80, w:80, h:64, hp:30, vx:-60, fire:0};
+}
+function shoot(x,y,dir){
+  bullets.push({x, y, r:3, vx: dir*480, from:'player'});
+  tone(880,0.05,'square',0.04);
+}
+function enemyShoot(e){
+  bullets.push({x:e.x-6, y:e.y+e.h*0.5, r:3, vx: -240, from:'enemy'});
+  tone(300,0.05,'sawtooth',0.03);
+}
+function explode(x,y,n=10){
+  for(let i=0;i<n;i++) particles.push({x,y,vx:rand(-80,80),vy:rand(-120,-40),life:rand(0.4,0.8)});
+}
+function rand(a,b){ return a + Math.random()*(b-a); }
+function rect(a,b){ return !(a.x+a.w < b.x || a.x > b.x+b.w || a.y+a.h < b.y || a.y > b.y+b.h); }
+
+/* ===== Draw helpers (CRT pixel art) ===== */
+function drawHero(x,y,flip=false,duck=false,frame=0){
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(flip?-1:1, 1);
+  ctx.translate(-12, -36);
+  ctx.fillStyle="rgba(127,255,138,0.9)";
+  // head
+  ctx.fillRect(8,2,10,10);
+  // torso
+  ctx.fillRect(6,12,14,14);
+  // legs
+  ctx.fillRect(6,26,6,10);
+  ctx.fillRect(14,26,6,10);
+  // arms (swing)
+  const armY = 14 + Math.sin(frame*0.3)*3;
+  ctx.fillRect(2,armY,6,6);
+  ctx.fillRect(20,18-armY%4,6,6);
+  ctx.restore();
+}
+function drawEnemy(e){
+  ctx.save();
+  ctx.fillStyle="rgba(127,255,138,0.85)";
+  if(e.type==='grunt'){
+    ctx.fillRect(e.x, e.y, e.w, e.h);
+  }else{
+    ctx.fillRect(e.x, e.y, e.w, e.h);
+    ctx.fillRect(e.x-6, e.y+6, 6, 3);
+  }
+  ctx.restore();
+}
+function drawBoss(b){
+  ctx.save();
+  ctx.fillStyle="rgba(127,255,138,0.95)";
+  ctx.fillRect(b.x, b.y, b.w, b.h);
+  ctx.fillRect(b.x-12, b.y+10, 12, 8);
+  ctx.fillRect(b.x+b.w, b.y+16, 18, 6);
+  ctx.fillStyle="rgba(127,255,138,0.25)"; ctx.fillRect(b.x, b.y-10, b.w, 6);
+  ctx.fillStyle="rgba(127,255,138,0.9)"; ctx.fillRect(b.x, b.y-10, Math.max(0,b.w*(b.hp/30)), 6);
+  ctx.restore();
+}
+
+/* ===== Loop ===== */
+function loop(ts){
+  requestAnimationFrame(loop);
+  if(!playing || paused) return;
+  if(!last) last = ts;
+  const dt = Math.min(0.033,(ts-last)/1000); last = ts;
+  t += dt; iFrames = Math.max(0, iFrames - dt);
+
+  // sizes
+  W=cvs.clientWidth; H=cvs.clientHeight;
+
+  // player move
+  let vx = 0;
+  if(keys.left) { vx -= SPEED; player.facing = -1; }
+  if(keys.right){ vx += SPEED; player.facing =  1; }
+  player.x += vx*dt;
+  player.x = Math.max(camX+20, Math.min(camX+W*0.5, player.x));
+  // jump
+  if(keys.up && player.onGround){ player.vy = JUMP_V; player.onGround=false; tone(700,0.06,'square',0.03); }
+  player.vy += 1500*dt; player.y += player.vy*dt;
+  if(player.y >= GROUND_Y()){ player.y = GROUND_Y(); player.vy = 0; player.onGround=true; }
+  player.frame += dt*10;
+  // shooting
+  player.fireCd -= dt;
+  if(keys.shoot && player.fireCd<=0){ shoot(player.x + (player.facing>0?14:-14), player.y-22, player.facing); player.fireCd=0.18; }
+
+  // camera & distance
+  camX += (vx>0? vx : SPEED*0.6) * dt * 0.5;
+  dist += (SPEED*dt)|0;
+  distEl.textContent = dist|0;
+
+  // Spawns
+  if(!bossTriggered){
+    if(t%1.2<dt) spawnEnemy();
+    if(dist>1200){ bossTriggered=true; spawnBoss(); }
+  }
+
+  // update enemies
+  for(const e of enemies){
+    if(e.type==='grunt'){ e.x -= e.sp*dt; }
+    else{ e.x -= e.sp*dt; e.t += dt; e.y += Math.sin(e.t*2.5)*40*dt; }
+    if(Math.random()<0.01 && e.type!=='grunt') enemyShoot(e);
+  }
+
+  // boss move/shoot
+  if(boss){
+    boss.x += boss.vx*dt;
+    if(boss.x < camX+W-260) boss.vx = 0;
+    boss.fire -= dt;
+    if(boss.fire<=0){
+      bullets.push({x:boss.x-6, y:boss.y+boss.h*0.3, r:4, vx:-260, from:'enemy'});
+      bullets.push({x:boss.x-6, y:boss.y+boss.h*0.7, r:4, vx:-260, from:'enemy'});
+      boss.fire = 0.9;
+      tone(240,0.08,'sawtooth',0.03);
+    }
+  }
+
+  // bullets
+  for(const b of bullets){ b.x += b.vx*dt; }
+
+  // collisions
+  if(iFrames<=0){
+    const pr = {x:player.x-13, y:player.y-40, w:26, h:40};
+    for(const e of enemies){ if(rect(pr,e)){ lives--; iFrames=1.2; tone(200,0.1,'triangle',0.05); break; } }
+    for(const b of bullets){ if(b.from==='enemy'){ const bb={x:b.x-b.r,y:b.y-b.r,w:b.r*2,h:b.r*2}; if(rect(pr,bb)){ b.x=-9999; lives--; iFrames=1.2; tone(200,0.1,'triangle',0.05); break; } } }
+    if(lives<=0){
+      lives=0; playing=false;
+      overlay.classList.remove('hide');
+      overlayMsg.innerHTML = "<b>MISSION FAILED</b><br/>Tap START to try again.";
+    }
+  }
+
+  for(const b of bullets){
+    if(b.from!=='player') continue;
+    for(const e of enemies){
+      const bb={x:b.x-b.r,y:b.y-b.r,w:b.r*2,h:b.r*2};
+      if(rect(bb,e)){ e.hp--; b.x=99999; if(e.hp<=0){ explode(e.x+e.w*0.5,e.y+e.h*0.5); e.x=-9999; score+=50; } }
+    }
+    if(boss){
+      const bb={x:b.x-b.r,y:b.y-b.r,w:b.r*2,h:b.r*2};
+      if(rect(bb,boss)){ boss.hp--; b.x=99999; tone(520,0.05,'square',0.03); if(boss.hp<=0){ explode(boss.x+boss.w*0.5, boss.y+boss.h*0.5, 30); score+=500; boss=null; playing=false; overlay.classList.remove('hide'); overlayMsg.innerHTML="<b>BOSS DEFEATED</b><br/>Prototype complete. Tap START to replay."; } }
+    }
+  }
+
+  for(let i=bullets.length-1;i>=0;i--){ const b=bullets[i]; if(b.x<camX-40 || b.x>camX+W+80) bullets.splice(i,1); }
+  for(let i=enemies.length-1;i>=0;i--){ const e=enemies[i]; if(e.x<camX-80 || e.x>camX+W+200 || e.hp<=0) enemies.splice(i,1); }
+  for(let i=particles.length-1;i>=0;i--){ const p=particles[i]; p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=900*dt; p.life-=dt; if(p.life<=0) particles.splice(i,1); }
+
+  livesEl.textContent = lives;
+  scoreEl.textContent = score|0;
+
+  ctx.clearRect(0,0,cvs.width,cvs.height);
+
+  ctx.save(); ctx.scale(cvs.width/W, cvs.height/H);
+  ctx.strokeStyle="rgba(127,255,138,0.08)"; ctx.lineWidth=1;
+  for(let x=0;x<W;x+=32){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for(let y=0;y<H;y+=32){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  ctx.restore();
+
+  ctx.save(); ctx.strokeStyle="rgba(127,255,138,0.35)"; ctx.beginPath(); ctx.moveTo(0,GROUND_Y()+0.5); ctx.lineTo(W,GROUND_Y()+0.5); ctx.stroke(); ctx.restore();
+
+  ctx.save(); ctx.strokeStyle="rgba(127,255,138,0.18)";
+  const px = (camX*0.3)%64;
+  for(let x=-px; x<W; x+=64){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  ctx.restore();
+
+  enemies.forEach(drawEnemy);
+  if(boss) drawBoss(boss);
+  ctx.fillStyle="rgba(127,255,138,0.9)";
+  bullets.forEach(b=>{ ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill(); });
+  ctx.fillStyle="rgba(127,255,138,0.65)";
+  particles.forEach(p=>{ ctx.fillRect(p.x,p.y,2,2); });
+
+  if(Math.floor(t*15)%2===0 || iFrames<=0) drawHero(player.x, player.y, player.facing<0, false, player.frame);
+}
+requestAnimationFrame(loop);
+
+/* init */
+resizeCanvas();
+</script>
+</body>
+</html>
