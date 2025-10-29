@@ -10,18 +10,16 @@
     :root{--ph:#7fff8a;--dim:#4db56b;--scan:rgba(0,0,0,.22)}
     html,body{background:#000;margin:0;color:var(--ph);font-family:"VT323",monospace}
     .wrapper{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 800px at 50% 50%, #061009 0%, #000 80%);}
-    /* Reserve space for the footer so it never overlaps content */
+    /* Let panel grow with content; no fixed height */
     .term{
       width:min(1100px,95vw);
-      height:min(720px,93vh);
+      min-height:min(720px,93vh);
       position:relative;
       background:#020402;
       border-radius:22px;
       padding:24px;
-      padding-bottom:120px; /* <-- added: space for footer */
       box-shadow:inset 0 0 90px rgba(0,0,0,.9),0 30px 80px rgba(0,0,0,.9);
       transform:perspective(1200px) rotateX(2deg);
-      overflow:hidden;
     }
     .term:before{content:"";position:absolute;inset:0;border-radius:22px;pointer-events:none;background:repeating-linear-gradient(to bottom,transparent 0px,transparent 2px,var(--scan) 3px,transparent 4px);mix-blend-mode:soft-light;opacity:.32}
     .term:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(1px 1px at 1px 1px, rgba(127,255,138,.08) .5px, rgba(0,0,0,0) .6px);background-size:6px 6px;mix-blend-mode:soft-light;opacity:.4;animation:crtFlicker 2.8s steps(2,end) infinite}
@@ -30,7 +28,7 @@
     .sub{color:var(--dim);margin-bottom:10px}
     .rule{height:1px;background:linear-gradient(90deg,var(--ph),transparent);opacity:.55;margin:8px 0 14px}
 
-    .menu{list-style:none;padding:0;margin:0;display:grid;gap:10px;position:relative;z-index:4; margin-bottom:12px;}
+    .menu{list-style:none;padding:0;margin:0;display:grid;gap:10px;position:relative;z-index:4}
     .item{display:flex;gap:10px;align-items:center;cursor:pointer;border:1px solid rgba(127,255,138,.28);background:rgba(8,16,10,.22);
       padding:10px 12px;border-radius:10px;font-size:22px;line-height:1.2;transition: background .15s linear, outline-color .15s linear, transform .06s;}
     .item:hover{ background:rgba(24,48,28,.4) }
@@ -43,11 +41,14 @@
     .item.chapter{margin-left:32px;border-style:dashed;display:none}
     .item.chapter .idx{opacity:.75}
 
-    /* footer (status) — stays at bottom, but space is reserved above via padding-bottom */
+    /* Footer in NORMAL FLOW (moves down with content) */
     .status{
-      position:absolute;left:0;right:0;bottom:0;padding:10px 16px;z-index:4;color:var(--dim);
+      margin-top:14px;
+      padding:10px 16px;
+      color:var(--dim);
       background:linear-gradient(0deg,rgba(10,20,12,.65),rgba(10,20,12,0));
-      display:flex;align-items:center;gap:12px;border-top:1px solid rgba(127,255,138,.18)
+      display:flex;align-items:center;gap:12px;
+      border-top:1px solid rgba(127,255,138,.18)
     }
     .status .left{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
     .status .right{flex:none;white-space:nowrap;}
@@ -70,7 +71,7 @@
     .intro a{ color:#9abaff; text-decoration:none }
     .intro a:hover{ text-decoration:underline }
 
-    /* Card pattern (Merch & Game) */
+    /* Reusable panels (Merch & Game) */
     .panel-box{display:flex;justify-content:center;margin:12px 0 16px}
     .panel{
       width:100%;
@@ -130,7 +131,7 @@
 
       <ul id="menu" class="menu" role="menu" aria-label="Stories & Chapters"></ul>
 
-      <!-- Footer/status (space reserved above) -->
+      <!-- Footer/status now flows after content -->
       <div class="status" aria-live="polite">
         <div class="left">INPUT: <span id="status">Open a story (click to expand), then pick a chapter. ↑/↓ to navigate, ENTER to open.</span></div>
         <div class="right">READY<span class="cursor">▌</span></div>
@@ -169,11 +170,11 @@
         liStory.dataset.type="story";
         liStory.dataset.index=sIdx;
         liStory.setAttribute("role","menuitem");
-        // caret starts collapsed ▶
+        // caret starts COLLAPSED ▶
         liStory.innerHTML=`<span class="idx">[–]</span><span class="caret">▶</span><span class="title">${story.title}</span><span class="badge">${story.chapters.length} ch.</span>`;
         menu.appendChild(liStory);
 
-        // start hidden
+        // chapters are hidden by default
         story.chapters.forEach((ch,cIdx)=>{
           const liCh=document.createElement("li");
           liCh.className="item chapter";
@@ -188,12 +189,9 @@
     }
     buildMenu();
 
-    function chaptersOfStory(sIdx){
-      return [...menu.querySelectorAll('.item.chapter')].filter(el=>+el.dataset.s===+sIdx);
-    }
-    function anyVisibleChapters(){
-      return [...menu.querySelectorAll('.item.chapter')].some(el=>el.style.display!=="none");
-    }
+    function chaptersOfStory(sIdx){ return [...menu.querySelectorAll('.item.chapter')].filter(el=>+el.dataset.s===+sIdx); }
+    function visibleChapters(){ return [...menu.querySelectorAll('.item.chapter')].filter(el=>el.style.display!=="none"); }
+
     function toggleStory(sIdx){
       const rows=chaptersOfStory(sIdx);
       const header=[...menu.querySelectorAll('.item.story')][sIdx];
@@ -201,10 +199,10 @@
       rows.forEach(el=>el.style.display=open?"none":"flex");
       const caret=header?.querySelector(".caret");
       if(caret) caret.textContent=open?"▶":"▾";
-      if(!open){
+      // update hint text
+      if(visibleChapters().length){
         statusEl.textContent="Use ↑/↓ to navigate chapters. ENTER to open.";
-        setActiveFirstVisible();
-      }else if(!anyVisibleChapters()){
+      }else{
         statusEl.textContent="Open a story (click to expand), then pick a chapter.";
       }
     }
@@ -215,14 +213,12 @@
       if(li.dataset.type==="chapter") openChapter(li);
     });
 
-    function visibleChapters(){ return [...menu.querySelectorAll('.item.chapter')].filter(el=>el.style.display!=="none"); }
     let activeIdx=0;
     function setActive(idx){
       const vis=visibleChapters(); if(!vis.length) return;
       activeIdx=(idx+vis.length)%vis.length; vis.forEach((el,i)=>el.classList.toggle("active",i===activeIdx));
       const t=vis[activeIdx].querySelector(".title")?.textContent||""; statusEl.textContent="Selected: "+t;
     }
-    function setActiveFirstVisible(){ setActive(0); }
     function openChapter(el){
       const s=+el.dataset.s,c=+el.dataset.c; const href=STORIES[s].chapters[c].href; if(href) location.href=href;
     }
@@ -234,9 +230,6 @@
       if(e.key==="Enter" && vis.length) openChapter(vis[activeIdx]);
       if(/^[1-9]$/.test(e.key)){ const n=(+e.key)-1; if(vis[n]){ setActive(n); openChapter(vis[n]); } }
     });
-
-    // NOTE: removed the old auto-expand call.
-    // Stories now load COLLAPSED by default.
 
     // Reader mode toggle
     const t=document.getElementById('toggleMode');
