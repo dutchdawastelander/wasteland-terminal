@@ -40,6 +40,64 @@ font-family:"VT323",monospace;color:var(--dim);background:rgba(0,0,0,.35)}
 .ad-slot{margin:14px 0;padding:6px;border:1px dashed rgba(127,255,138,.25);border-radius:8px;text-align:center;color:var(--dim);
 font-size:16px;background:rgba(8,16,10,.18)}
 .meta{max-width:760px;margin:0 auto;color:var(--dim);padding:0 20px}
+
+/* === Ko-fi CRT Button === */
+.support-slot{
+  margin:16px auto 22px;
+  text-align:center;
+  max-width:760px;
+}
+.coffee-link{text-decoration:none;}
+.coffee-box{
+  display:inline-block;
+  font-family:"VT323", monospace;
+  font-size:18px;
+  letter-spacing:.05em;
+  color:var(--ph);
+  background:rgba(8,16,10,.25);
+  border:1px solid rgba(127,255,138,.40);
+  border-radius:10px;
+  padding:10px 20px;
+  text-shadow:0 0 8px rgba(127,255,138,.30);
+  box-shadow:0 0 10px rgba(0,0,0,.55),inset 0 0 6px rgba(127,255,138,.22);
+  transition:transform .12s ease,box-shadow .12s ease,background .12s ease,color .12s ease;
+  position:relative;
+}
+.coffee-box::after{
+  content:"";
+  pointer-events:none;
+  position:absolute;inset:0;
+  border-radius:10px;
+  background:repeating-linear-gradient(to bottom,
+      rgba(0,0,0,.10)0px,
+      rgba(0,0,0,.10)2px,
+      transparent 4px);
+  mix-blend-mode:soft-light;
+  opacity:.28;
+}
+.coffee-box:hover{
+  background:rgba(16,32,20,.45);
+  color:#a6f8b5;
+  box-shadow:0 0 12px rgba(127,255,138,.45),inset 0 0 6px rgba(127,255,138,.25);
+  transform:translateY(-1px);
+}
+.reader .coffee-box{
+  background:rgba(8,16,10,.18);
+  border-color:rgba(127,255,138,.30);
+}
+.reader .coffee-box::after{opacity:.16}
+@media(max-width:520px){
+  .coffee-box{font-size:16px;padding:9px 16px;border-radius:8px;}
+}
+@keyframes crtPulse{
+  0%,100%{box-shadow:0 0 10px rgba(0,0,0,.55),inset 0 0 6px rgba(127,255,138,.22);}
+  50%{box-shadow:0 0 12px rgba(127,255,138,.18),inset 0 0 7px rgba(127,255,138,.28);}
+}
+.coffee-box.pulse{animation:crtPulse 3.5s ease-in-out infinite;}
+@media(prefers-reduced-motion:reduce){
+  .coffee-box{transition:none}
+  .coffee-box.pulse{animation:none}
+}
 </style>
 </head>
 <body>
@@ -50,14 +108,11 @@ font-size:16px;background:rgba(8,16,10,.18)}
   <div class="subtitle">Chapter 1 — The Road Out of New York</div>
   <div class="meta">Recovered Journal Entries — Vault-Tec Timestamp Reconstruction Unavailable • Author: Unknown Male Survivor, Appalachian Region</div>
 
-  <div class="ad-slot" id="adTop">
-    <ins class="adsbygoogle"
-         style="display:block; text-align:center;"
-         data-ad-layout="in-article"
-         data-ad-format="fluid"
-         data-ad-client="ca-pub-6783128125276286"
-         data-ad-slot="1452363256"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <!-- ☕ Ko-fi Support Button -->
+  <div class="support-slot" id="supportTop">
+    <a href="https://ko-fi.com/dutchdawastelander" target="_blank" rel="noopener" class="coffee-link">
+      <div class="coffee-box pulse">☕ SUPPORT THE ARCHIVER — TIP ON KO-FI</div>
+    </a>
   </div>
 
   <main id="story">
